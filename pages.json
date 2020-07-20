@@ -1,14 +1,38 @@
 {
-	"pages": [{
-		"path": "pages/index/index",
-		"style": {
-			"navigationBarTitleText": "uni-ui基础项目"
+	"pages": [
+		{//启动页后的第一张页面
+		    "path" : "pages/start/start",
+		    "style" : {
+				"app-plus":{//取消原生头部
+				   "titleNView":false
+				}
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "uni-ui基础项目"
+			}
+			// "style": {
+			// 	"navigationStyle": "custom" //,
+			// 	//"enablePullDownRefresh": true
+			// }
+		},
+		{//登录界面
+            "path" : "pages/login/login",
+            "style" : {
+            	"app-plus":{//取消原生头部
+            	   "titleNView":false
+            	}
+            }
+        },
+		{//验证码登录界面
+		    "path" : "pages/login/codeLogin",
+		    "style" : {
+		    	"navigationStyle": "custom"
+		    }
 		}
-		// "style": {
-		// 	"navigationStyle": "custom" //,
-		// 	//"enablePullDownRefresh": true
-		// }
-	}],
+    ],
 	
 	"tabBar": {
 		// "color":"#808080", 

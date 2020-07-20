@@ -1,6 +1,6 @@
 <template>
-	<view class="container">
-		
+	<view class="content">
+		<custom title="付款码"></custom>
 	</view>
 </template>
 
@@ -15,9 +15,7 @@
 
 		},
 		onLoad() {
-			this.http("/api").then(res=>{
-				console.log(12)
-			})
+			
 		}
 	}
 </script>
