@@ -32,6 +32,14 @@
 		    	"navigationStyle": "custom"
 		    }
 		}
+        ,{
+            "path" : "pages/login/wxPhone",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/login/wxTel",
+            "style" : {}
+        }
     ],
 	
 	"tabBar": {

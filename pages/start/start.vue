@@ -33,7 +33,7 @@
 				view_height:{
 					height:this.$store.state.system.windowHeight-0+"px",
 				},
-				autoplay: true,
+				autoplay: false,
 				interval: 2000,
 				duration: 500,
 				
@@ -56,7 +56,7 @@
 			 * 登录注册跳转方法
 			 */
 			jump(index){
-				uni.reLaunch({url:"/pages/login/login?type="+index})
+				uni.navigateTo({url:"/pages/login/login?type="+index})
 			}
 		}
 		
@@ -84,7 +84,7 @@
 			.reg{
 				background:#FFBF29;border-radius: 8upx;
 				color:#fff;width:250upx;justify-content: center;
-				height:52upx;
+				height:80upx;
 				display: flex;align-items: center;font-size: 26upx;
 			}
 			

@@ -1,4 +1,4 @@
-const baseURL = "https://devs.yunkalian.cn"
+const baseURL = "https://api.diewo.cn/index.php"
 
 const token = uni.getStorageSync("token")
 
@@ -10,16 +10,16 @@ const http = (options) => {
 		});
 		
 		try{
-			
-			if(token){
+			console.log(options)
+			// if(token){
 				uni.request({
 					url:(options.baseURL || baseURL) + options.url,
 					method: options.method || 'POST', // 默认为POST请求
 					data: options.data, //请求超时在manifest.json配置
-					header: {
-						'Authorization': 'Bearer'+token,
-						'Content-Type': options.header == 'form' ? 'application/x-www-form-urlencoded' : 'application/json'
-					},
+					// header: {
+					// 	'Authorization': 'Bearer'+token,
+					// 	'Content-Type': options.header == 'form' ? 'application/x-www-form-urlencoded' : 'application/json'
+					// },
 					success:res=>{
 						resolve(res.data)
 					},
@@ -40,12 +40,12 @@ const http = (options) => {
 						uni.hideLoading();
 					}
 				})
-			}else{
-				uni.showToast({
-					title: '请先登录!!!',
-					icon: 'none'
-				})
-			}
+			// }else{
+			// 	uni.showToast({
+			// 		title: '请先登录!!!',
+			// 		icon: 'none'
+			// 	})
+			// }
 			
 		}catch(e){
 			uni.hideLoading();
