@@ -1,5 +1,7 @@
 <template>
 	<view class='content'>
+		<custom v-if="type==0"></custom>
+		<custom v-if="type==1 && isCodeLogin" rightText="遇到问题" :back="false" :borfrt="false"></custom>
 		<view class="login">{{type==0?'注册':'登录'}}</view>
 		<view class="log_input">
 			<view class="tel">
@@ -18,7 +20,7 @@
 				<image src="../../static/img/cha.png" class="clear" v-if="userInfo.password.length>0" @tap.stop="clearPassword"></image>
 			</view>
 		</view>
-		<view class="sublime" :class="{bggray: userInfo.codeTextShow == 1 || userInfo.tel.length<11}" @tap.stop="login">{{isCodeLogin?'登录':'获取验证码'}}</view>
+		<view class="sublime" :class="{bggray: userInfo.codeTextShow == 1 || userInfo.tel.length<11}" @tap.stop="login">{{isCodeLogin?'登录':'获验证码'}}</view>
 		<view class="around-tip" v-if="type==1">
 			<view class="tips" @tap.stop="codeReg" >{{isCodeLogin?(userInfo.codeTextShow==0?codeText.getCode: userInfo.codeTextShow==1?count + codeText.countDown: codeText.getAgain):'密码登录'}}</view>
 			<view class="tips" @tap.stop="regNewNumber">注册账号</view>
@@ -26,8 +28,8 @@
 		<view class="other-login" >
 			<view class="other-tip" v-if="type==1">其他登录方式</view>
 			<view class="list" v-if="type==1">
-				<image src="../../static/img/weixin.png" mode="widthFix" class="img"></image>
-				<image src="../../static/img/qq.png" mode="widthFix" class="img"></image>
+				<image src="../../static/img/weixin.png" mode="widthFix" class="img" @tap.stop="quickLogin('weixin', 1)"></image>
+				<image src="../../static/img/qq.png" mode="widthFix" class="img" @tap.stop="quickLogin('qq', 2)"></image>
 			</view>
 			<view class="clause">
 				<text>隐私条款</text>和<text>服务协议</text>
@@ -47,11 +49,11 @@
 					codeTextShow:0
 				},
 				codeText: {
-					getCode: '获取验证码',
+					getCode: '验证码登录',
 					countDown: 's秒后重发	',
 					getAgain: '获取验证码',
 				},
-				count: 59,
+				
 				isCodeLogin:false,
 				type:""
 				
@@ -89,40 +91,101 @@
 			 * 注册新账户
 			 */
 			regNewNumber(){
-				
+				uni.navigateTo({
+					url:"/pages/login/login?type="+"0"
+				})
 			},
 			
 			/**
 			 * 获取表单数据实现登录
 			 */
 			login(){
-				let loginRules = [
-				  {name: 'tel', required: true, type: 'phone', errmsg: '请输入正确的手机号'},
-				  {name: 'password', type: 'required', errmsg: '请输入密码'},
-				  {name: 'password', type: 'pwd', errmsg: '密码须是6～16位字符'},
-				]
-				let code = [
-				  {name: 'telCode', type: 'required', errmsg: '请输入验证码'},
-				  {name: 'telCode', type: 'lengthRange', min: 6, max: 6, errmsg: '请正确输入验证码'}
-				]
+				let valLoginRes
+				let url
 				if(this.isCodeLogin){
-					let valLoginRes = this.$validate.validate(this.userInfo, loginRules)
-					if (!valLoginRes.isOk) {
-					  uni.showToast({
-						icon: 'none',
-						title: valLoginRes.errmsg
-					  })
-					  return false
-					}
+					let loginRules = [
+					  {name: 'tel', required: true, type: 'phone', errmsg: '请输入正确的手机号'},
+					  {name: 'password', type: 'required', errmsg: '请输入密码'},
+					  {name: 'password', type: 'pwd', errmsg: '密码须是6～16位字符'},
+					]
+					valLoginRes = this.$validate.validate(this.userInfo, loginRules)
 				}else{
-					if(this.userInfo.tel.length==0){
-						uni.showToast({icon: 'none',title: "请输入电话号码!!!"});
-						return false
-					}else{
-						uni.navigateTo({url:"/pages/login/codeLogin"})
-					}
-					
+					let code = [
+						{name: 'tel', required: true, type: 'phone', errmsg: '请输入正确的手机号'},
+					  // {name: 'telCode', type: 'required', errmsg: '请输入验证码'},
+					  // {name: 'telCode', type: 'lengthRange', min: 6, max: 6, errmsg: '请正确输入验证码'}
+					]
+					valLoginRes = this.$validate.validate(this.userInfo, code)
 				}
+				if (!valLoginRes.isOk) {
+				  uni.showToast({
+					icon: 'none',
+					title: valLoginRes.errmsg
+				  })
+				  return false
+				}else{
+					if(this.isCodeLogin){
+						url="/user/login"
+						this.send(url)
+					}else{
+						url="/sms/send"
+						this.send(url)
+					}
+					//uni.navigateTo({url:"/pages/login/codeLogin"})
+				}
+				
+			},
+			
+			/**
+			 * 根据状态判断获取验证码或者登录
+			 */
+			send(url){
+				let self=this
+				this.http({
+					url:url,
+					data:{
+						mobile:self.userInfo.tel
+					}
+				}).then(res=>{
+					console.log(res)
+				}).catch(err=>{
+					console.log(err)
+				})
+			},
+			
+			/**
+			 * 其他三方登录
+			 */
+			quickLogin(provider, type){
+				let self = this
+				uni.login({
+					provider: provider,
+					success(){
+						uni.getUserInfo({
+							provider: provider,
+							success(result){
+								let openId = result.userInfo.openId
+								let nickName = result.userInfo.nickName
+								let avatarUrl = ''
+								if(type == 1){
+									avatarUrl = result.userInfo.avatarUrl
+								}else {
+									avatarUrl = result.userInfo.figureurl_qq || result.userInfo.avatarUrl
+								}
+								self.http("/user/get_wx",{
+									openid:openId
+								}).then(res=>{
+									console.log(res)
+									// uni.navigateTo({
+									// 	url:"/pages/login/wxPhone"
+									// })
+								}).catch(err=>{
+									console.log(err)
+								})
+							}
+						})
+					}
+				})
 			}
 		}
 	}
