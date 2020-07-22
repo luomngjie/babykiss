@@ -1,6 +1,6 @@
 <template>
 	<view class='content'>
-		<custom ></custom>
+		
 		<view class="login">输入密码</view>
 		<view class="log_input">
 			<view class="tel">

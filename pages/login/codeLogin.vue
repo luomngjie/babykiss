@@ -1,9 +1,9 @@
 <template>
-	<view class="content">
+	<view class="content" :style="{'height':height+'px'}">
 		<custom></custom>
 		<view class="title code">输入验证码</view>
 		<view class="tips">验证码已发送到:+86 &nbsp;{{phone}}</view>
-		<validCode :maxlength="4" :isPwd="true" @finish="getCode"></validCode>
+		<validCode :maxlength="4" :isPwd="false" @finish="finish"></validCode>
 		<view class="time" v-if="count>0">{{count}}秒后重新获取</view>
 		<view class="time" v-if="count==0" @tap.stop="againCode">重新获取</view>
 	</view>
@@ -17,6 +17,7 @@
 		},
 		data() {
 			return {
+				height:0,
 				phone:"18223138790",
 				count: 10,
 				codeText: {
@@ -30,6 +31,7 @@
 		},
 		
 		onLoad() {
+			this.height=this.$store.state.system.screenHeight
 			this.getCode()
 		},
 		methods:{
@@ -58,6 +60,15 @@
 		   againCode(){
 			   this.count=10
 			   this.getCode()
+		   },
+		   
+			
+		   /**
+			* 验证码输入完成自动触发
+			*/
+		   finish(e){
+			   console.log(13)
+			   uni.switchTab({url:"/pages/index/index"})
 		   }
 		   
 		}

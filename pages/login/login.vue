@@ -1,7 +1,7 @@
 <template>
-	<view class='content'>
+	<view class='content' :style="{'height':height+'px'}">
 		<custom v-if="type==0"></custom>
-		<custom v-if="type==1 && isCodeLogin" rightText="遇到问题" :back="false" :borfrt="false"></custom>
+		<custom v-if="type==1 && isCodeLogin" rightText="遇到问题" :back="false" :borfrt="false" @click-right="popup"></custom>
 		<view class="login">{{type==0?'注册':'登录'}}</view>
 		<view class="log_input">
 			<view class="tel">
@@ -35,7 +35,14 @@
 				<text>隐私条款</text>和<text>服务协议</text>
 			</view>
 		</view>
-		
+		<uni-popup type="center" ref="popup" zIndex="999">
+			<view class="popup-center">
+				<view class="item-list">提示</view>
+				<view class="line"/>
+				<view class="item-list" @click="forget">忘记密码</view>
+				
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -55,13 +62,15 @@
 				},
 				
 				isCodeLogin:false,
-				type:""
+				type:"",
+				height:0
 				
 			};
 		},
 		
 		onLoad(opt) {
 			this.type=opt.type
+			this.height=this.$store.state.system.screenHeight+200
 		},
 		
 		methods:{
@@ -124,12 +133,14 @@
 				  })
 				  return false
 				}else{
-					if(this.isCodeLogin){
+					if(this.isCodeLogin){//密码登录
 						url="/user/login"
 						this.send(url)
-					}else{
+					}else{//验证码登录
+						
 						url="/sms/send"
 						this.send(url)
+						//uni.navigateTo({url:"/pages/login/codeLogin"})
 					}
 					//uni.navigateTo({url:"/pages/login/codeLogin"})
 				}
@@ -145,12 +156,21 @@
 					url:url,
 					data:{
 						mobile:self.userInfo.tel
+					},
+					success:res=>{
+						console.log(res)
+					},
+					fail:err=>{
+						console.log(err)
 					}
-				}).then(res=>{
-					console.log(res)
-				}).catch(err=>{
-					console.log(err)
 				})
+			},
+			
+			/**
+			 * 遇到问题弹窗
+			 */
+			popup(){
+				this.$refs["popup"].open()
 			},
 			
 			/**
@@ -172,19 +192,33 @@
 								}else {
 									avatarUrl = result.userInfo.figureurl_qq || result.userInfo.avatarUrl
 								}
-								self.http("/user/get_wx",{
-									openid:openId
-								}).then(res=>{
-									console.log(res)
-									// uni.navigateTo({
-									// 	url:"/pages/login/wxPhone"
-									// })
-								}).catch(err=>{
-									console.log(err)
+								uni.navigateTo({
+									url:"/pages/login/wxPhone"
 								})
+								
+								// self.http({
+								// 	url:"/user/get_wx",
+								// 	data:{openid:openId},
+								// 	success:res=>{
+								// 		console.log(res)
+								// 		uni.navigateTo({
+								// 			url:"/pages/login/wxPhone"
+								// 		})
+								// 	}
+								// })
 							}
 						})
 					}
+				})
+			},
+			
+			
+			/*
+			忘记密码*
+			 */
+			forget(){
+				uni.navigateTo({
+					url:"/pages/login/forget"
 				})
 			}
 		}
@@ -297,6 +331,22 @@
 		
 		.bggray{
 			background-color: #dddddd;
+		}
+		
+		.popup-center{
+			width:600upx;background-color: #fff;
+			border-radius: 7upx;
+			font-size: 22upx;
+			display: flex;
+			flex-direction: column;
+			.item-list{
+				padding:33upx;
+			}
+			.line{
+				border-bottom:2upx solid #eee;
+				margin:0 30upx
+			}
+			
 		}
 	}
 	

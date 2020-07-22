@@ -10,42 +10,35 @@ const http = (options) => {
 		});
 		
 		try{
-			console.log(options)
-			// if(token){
-				uni.request({
-					url:(options.baseURL || baseURL) + options.url,
-					method: options.method || 'POST', // 默认为POST请求
-					data: options.data, //请求超时在manifest.json配置
-					// header: {
-					// 	'Authorization': 'Bearer'+token,
-					// 	'Content-Type': options.header == 'form' ? 'application/x-www-form-urlencoded' : 'application/json'
-					// },
-					success:res=>{
-						resolve(res.data)
-					},
-					fail:err=>{
-						reject(err.data);
-						
-						uni.showToast({
-							title: '请检查网络连接',
-							icon: 'none'
-						})
-						
-						//错误码处理
-						
-						
-					},
+			
+			uni.request({
+				url:(options.baseURL || baseURL) + options.url,
+				method: options.method || 'POST', // 默认为POST请求
+				data: options.data, //请求超时在manifest.json配置
+				// header:{
+				// 	'token':token,
+				// },
+				success:res=>{
+					resolve(res.data)
+				},
+				fail:err=>{
+					reject(err.data);
 					
-					complete:()=>{
-						uni.hideLoading();
-					}
-				})
-			// }else{
-			// 	uni.showToast({
-			// 		title: '请先登录!!!',
-			// 		icon: 'none'
-			// 	})
-			// }
+					uni.showToast({
+						title: '请检查网络连接',
+						icon: 'none'
+					})
+					
+					//错误码处理
+					
+					
+				},
+				
+				complete:()=>{
+					uni.hideLoading();
+				}
+			})
+			
 			
 		}catch(e){
 			uni.hideLoading();
