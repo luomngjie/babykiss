@@ -2,6 +2,8 @@
 	<view class='content' :style="{'height':height+'px'}">
 		<custom v-if="type==0"></custom>
 		<custom v-if="type==1 && isCodeLogin" rightText="遇到问题" :back="false" :borfrt="false" @click-right="popup"></custom>
+		<custom v-if="type==0"></custom>
+		<custom v-if="type==1 && isCodeLogin" rightText="遇到问题" :back="false" :borfrt="false"></custom>
 		<view class="login">{{type==0?'注册':'登录'}}</view>
 		<view class="log_input">
 			<view class="tel">

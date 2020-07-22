@@ -6,6 +6,8 @@
 		<validCode :maxlength="4" :isPwd="false" @finish="finish"></validCode>
 		<view class="time" v-if="count>0">{{count}}秒后重新获取</view>
 		<view class="time" v-if="count==0" @tap.stop="againCode">重新获取</view>
+		<view class="time" v-if="count>0">{{count}}秒后重新获取</view>
+		<view class="time" v-if="count==0" @tap.stop="againCode">重新获取</view>
 	</view>
 </template>
 
