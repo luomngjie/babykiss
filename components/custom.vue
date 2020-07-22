@@ -213,7 +213,7 @@
 			//跳至tabber页面
 			backTabbarUrl: {
 				type: String,
-				default: '/pages/client/home/index'
+				default: '/pages/index/index'
 			},
 			//滑动后切换左插槽
 			leftSlidiSwitch: {
@@ -418,18 +418,25 @@
 					uni.removeStorageSync('businessSession')
 				}
 				if (this.back) {
+					
 					if (getCurrentPages().length > 1) {
+						
 						uni.navigateBack();
 					} else {
+						
 						if (this.defaultBackUrl) {
+							
 							uni.redirectTo({
 								url: this.defaultBackUrl
 							})
 						} else {
+							
 							if (this.backTabbarUrl) {
+								
 								uni.reLaunch({
 									url: this.backTabbarUrl
 								});
+								
 							}
 						}
 					}

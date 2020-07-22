@@ -1,6 +1,6 @@
 <template>
-	<view class="content">
-		
+	<view class="content" :style="{'height':height+'px'}">
+		<custom  :isLeft="true" ></custom>
 		<view class="title code">绑定手机号</view>
 		<view class="tips">为保护账户安全,请先绑定手机号码。绑定后您可以使用该手机号登录APP</view>
 		<view class="tel">
@@ -25,6 +25,7 @@
 		},
 		data() {
 			return {
+				height:0,
 				userInfo:{
 					tel:"18223138790"
 				},
@@ -47,6 +48,9 @@
 			   })
 		   }
 		  
+		},
+		onLoad() {
+			this.height=this.$store.state.system.screenHeight
 		}
 	}
 </script>

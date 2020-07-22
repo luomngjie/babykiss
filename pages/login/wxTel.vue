@@ -1,6 +1,6 @@
 <template>
-	<view class='content'>
-		
+	<view class='content' :style="{'height':height+'px'}">
+		<custom  :isLeft="true"></custom>
 		<view class="login">输入密码</view>
 		<view class="log_input">
 			<view class="tel">
@@ -29,6 +29,7 @@
 	export default {
 		data() {
 			return {
+				height:0,
 				userInfo:{
 					tel:"",
 					password:'',
@@ -41,7 +42,7 @@
 		},
 		
 		onLoad(opt) {
-			
+			this.height=this.$store.state.system.screenHeight
 		},
 		
 		methods:{

@@ -1,6 +1,6 @@
 <template>
-	<view class="content">
-		<custom  :isLeft="true"></custom>
+	<view class="content" :style="{'height':height+'px'}">
+		<custom  :isLeft="true" title="找回密码"></custom>
 		<view class="forget">
 			<view class="forget-title" style="color: #212832;">找回密码</view>
 			<view class="forget-con">
@@ -28,6 +28,7 @@
 	export default {
 		data() {
 			return {
+				height:0,
 				phone: '',
 				code: '',
 				timer: null,
@@ -40,6 +41,9 @@
 				},
 				disabled: false
 			}
+		},
+		onLoad() {
+			this.height=this.$store.state.system.screenHeight
 		},
 		methods: {
 			next() {
@@ -119,6 +123,7 @@
 <style lang="scss" scoped>
 	.content{
 		.forget{
+			margin-top: 100upx;
 			.forget-title{
 				text-align: center;
 				font-size: 32upx;

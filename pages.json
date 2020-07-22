@@ -24,15 +24,15 @@
 		}
         ,{
             "path" : "pages/login/wxPhone",
-            "style" : {}
+            "style" : {"navigationStyle": "custom"}
         }
         ,{
             "path" : "pages/login/wxTel",
-            "style" : {}
+            "style" : {"navigationStyle": "custom"}
         }
         ,{//忘记密码
             "path" : "pages/login/forget",
-            "style" : {}
+           "style":{"navigationStyle": "custom"}
         },
 		{//亲宝宝
 			"path":"pages/index/index",
