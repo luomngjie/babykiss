@@ -8,16 +8,6 @@
 				}
 			}
 		},
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-ui基础项目"
-			}
-			// "style": {
-			// 	"navigationStyle": "custom" //,
-			// 	//"enablePullDownRefresh": true
-			// }
-		},
 		{//登录界面
             "path" : "pages/login/login",
             "style" : {
@@ -40,33 +30,63 @@
             "path" : "pages/login/wxTel",
             "style" : {}
         }
+        ,{//忘记密码
+            "path" : "pages/login/forget",
+            "style" : {}
+        },
+		{//亲宝宝
+			"path":"pages/index/index",
+			"style":{"navigationStyle": "custom"}
+		},
+		{//孕育
+			"path":"pages/parenting/parenting",
+			"style":{"navigationStyle": "custom"}
+		},
+		{//消息
+			"path":"pages/news/news",
+			"style":{"navigationStyle": "custom"}
+		},
+		{//我的
+			"path":"pages/main/main",
+			"style":{"navigationStyle": "custom"}
+		}
+		
+        
+        ,{//添加宝宝
+            "path" : "pages/index/add_baby/add_baby",
+            "style":{"navigationStyle": "custom"}
+        }
+        ,{//添加宝宝的信息
+            "path" : "pages/index/baby_infor/baby_infor",
+            "style":{"navigationStyle": "custom"}
+        }
     ],
 	
 	"tabBar": {
-		// "color":"#808080", 
-		// "selectedColor":"#FF0000" ,
-		// "backgroundColor": "#ffffff",
-		// "list": [{
-		// 	"pagePath": "pages/client/home/index",
-		// 	"text": "首页",
-		// 	"iconPath": "static/tabbar/home.png",
-		// 	"selectedIconPath": "static/tabbar/home_active.png"
-		// }, {
-		// 	"pagePath": "pages/client/card/index",
-		// 	"text": "卡包",
-		// 	"iconPath": "static/tabbar/card.png",
-		// 	"selectedIconPath": "static/tabbar/card_active.png"
-		// }, {
-		// 	"pagePath": "pages/client/build/index",
-		// 	"text": "建设",
-		// 	"iconPath": "static/tabbar/build.png",
-		// 	"selectedIconPath": "static/tabbar/build_active.png"
-		// }, {
-		// 	"pagePath": "pages/client/center/index",
-		// 	"text": "我的",
-		// 	"iconPath": "static/tabbar/wode.png",
-		// 	"selectedIconPath": "static/tabbar/wode_active.png"
-		// }]
+		"color":"#808080", 
+		"selectedColor":"#FF0000" ,
+		"backgroundColor": "#ffffff",
+		"list": [{
+			"pagePath":"pages/index/index",
+			"text": "亲宝宝",
+			"iconPath": "static/img/baby.png",
+			"selectedIconPath": "static/img/babysel.png"
+		}, {
+			"pagePath":"pages/parenting/parenting",
+			"text": "孕育",
+			"iconPath": "static/img/yuer.png",
+			"selectedIconPath": "static/img/yuer1.png"
+		}, {
+			"pagePath":"pages/news/news",
+			"text": "消息",
+			"iconPath": "static/img/new.png",
+			"selectedIconPath": "static/img/new1.png"
+		}, {
+			"pagePath": "pages/main/main",
+			"text": "我的",
+			"iconPath": "static/img/main.png",
+			"selectedIconPath": "static/img/main1.png"
+		}]
 	},
 	
 	
@@ -82,7 +102,7 @@
 		"list": [
 			{
 				"name": "", //模式名称
-				"path": "", //启动页面，必选
+				"path": "pages/index/index", //启动页面，必选
 				"query": "" //启动参数，在页面的onLoad函数里面得到
 			}
 		]

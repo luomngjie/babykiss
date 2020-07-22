@@ -1,7 +1,8 @@
 <template>
 	<view class="cu-navbar">
-		<view :class="{'cu-navbar--fixed': fixed,'cu-navbar--shadow':border,'cu-navbar--border':border}" :style="{'background': backgroundColorRgba}"
+		<view :class="{'cu-navbar--fixed': fixed,'cu-navbar--shadow':border,'cu-navbar--border':border}" 
 		 class="cu-navbar__content">
+		 <!-- :style="{'background': backgroundColorRgba}" -->
 			<block v-if="backgroundImg">
 				<image class="navbgimg" :src="backgroundImg" mode=""></image>
 			</block>
@@ -40,12 +41,13 @@
 				</view>
 
 				<view :style="[{'flex': flex?'1':''}]" :class="[title.length?'cu-navbar__header-btns-right':'',flex?'':'padding-r-30']"
-				 class="cu-navbar__header-btns cu-navbar__content_view" @tap="onClickRight" v-if="rightSlot">
+				 class="cu-navbar__header-btns cu-navbar__content_view" @tap="onClickRight" v-if="rightSlot" style="margin-right: 30upx;display: flex;justify-content: center;">
 					<!-- 优先显示图标 -->
 					<block v-if="rightIcon.length || rightText.length">
 						<view class="cu-navbar__content_view" v-if="rightIcon.length">
-							<!-- <uni-icons :type="rightIcon" :color="colorInfo" size="28"/> -->
-							<text class="cuIcon-right font-45" :class="{color: colorInfo}"></text>
+							<image src="../static/img/add.png" v-if="rightIcon=='jia'" class="img"></image>
+							<image src="../static/img/carame.png" v-else-if="rightIcon=='camera'" class="img"></image>
+							<text class="cuIcon-right font-45" :class="{color: colorInfo}" v-else></text>
 						</view>
 						<view v-if="rightText.length" class="cu-navbar-btn-text cu-navbar__content_view" style="font-size: 13px;">{{ rightText }}</view>
 					</block>
@@ -655,5 +657,8 @@
 	.left_back {
 		padding-left: 12upx;
 		padding-right: 12upx;
+	}
+	.img{
+		width:40upx;height:40upx;
 	}
 </style>

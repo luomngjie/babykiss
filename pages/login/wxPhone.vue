@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<custom></custom>
+		
 		<view class="title code">绑定手机号</view>
 		<view class="tips">为保护账户安全,请先绑定手机号码。绑定后您可以使用该手机号登录APP</view>
 		<view class="tel">
@@ -99,10 +99,10 @@
 		width:600upx;
 		margin:0 auto;
 		text-align: center;
-		height:70upx;
+		height:80upx;
 		background-color: #FFBF29;
 		border-radius: 20px;
-		line-height: 70upx;
+		line-height: 80upx;
 		color:#fff;
 		font-size: 26upx;
 		margin-top: 120upx;
