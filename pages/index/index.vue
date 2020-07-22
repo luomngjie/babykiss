@@ -1,10 +1,13 @@
 <template>
-	<view class="content">
+	<view class="content" >
 		<template v-if="isShowBaby=='addbaby'">
-			<custom leftText="宝宝"  :back="false" rightIcon="camera" @click-left="left" leftIcon="0"></custom>
+			
+			<custom leftText="宝宝"  :back="false" rightIcon="camera" @click-left="left" leftIcon="0" :backgroundImg="backgroundImg"></custom>
+			<scroll-view  style="height:100%;"  @scrolltolower="onReachScollBottom" scroll-y="true">
+				<!-- :style="{'height':height+'px'}" -->
 			<view class="background">
 				<view class="logo">
-					<image src="../../static/img/baby.png" class="img"></image>
+					<image src="../../static/img/baby.png" class="img" @click="imgpopup"></image>
 					<view class="right">
 						<view class="name">哈哈哈</view>
 						<view class="name">刚出生<image src="../../static/img/ready.png" class="ready"></image></view>
@@ -24,9 +27,11 @@
 			
 			
 				
-			<scroll-view scroll-y="true" :style="{'height':height+'upx'}" class="timeLine" @scrolltolower="onReachScollBottom">
+			
+			
+			<view class="timeLine">
 				<view class="scroll">
-					<view class="item-menu" v-for="index in 5" :key="index" @tap.stop="upload">
+					<view class="item-menu"  @tap.stop="upload">
 						<view class="day">7月12日&nbsp;第1天</view>
 						<view class="conten">
 							<image src="../../static/img/banner.jpg" class="image"></image>
@@ -34,12 +39,23 @@
 							<view class="uploat" >上传照片和视频</view>
 						</view>
 					</view>
-					
 				</view>
+			</view>
+			<ysteps :talk="talk"></ysteps>
+			
+			<uni-popup type="center" ref="operation" zIndex="999">
+				<view class="popup-center">
+					<view class="item-list">操作</view>
+					<view class="line"/>
+					<view class="item-list" >宝宝信息</view>
+					<view class="line"/>
+					<view class="item-list">设置头像</view>
+					<view class="line"/>
+					<view class="item-list">设置封面</view>
+				</view>
+			</uni-popup>
+			
 			</scroll-view>
-			
-			
-			
 			
 		</template>
 		<template v-else>
@@ -69,14 +85,69 @@
 </template>
 
 <script>
-	
+	import ysteps from '../../components/YSteps/YSteps.vue'
 	export default {
 		components:{
-			
+			ysteps
 		},
 		data() {
 			return {
+				backgroundImg:require('../../static/img/banner.jpg'),
 				isShowBaby:'',
+				talk: [
+					{
+						"id": 1,
+						"MMDD": "1月21",
+						"data":[
+							{
+								"user": {
+									"u_name": "李四",
+									"hms": "第一次学游泳",
+									"talk": "好嗨哟",
+									"image":'../../static/img/banner.jpg'
+								}
+							}
+						]
+						
+					},
+					{
+						"id": 2,
+						"MMDD": "10月21",
+						"data":[
+							{
+								"user": {
+									"u_name": "李阿达",
+									"HMS": "05:20:18",
+									"talk": "测试数据测试数据测试数据测试数据测试数据测试数据",
+								}
+							}
+						]
+						
+					},
+					{
+						"id": 3,
+						"MMDD": "5月21",
+						"data":[
+							{
+								"user": {
+									"u_name": "165.0.cm",
+									"hms": "56.0kg",
+									"talk": "15.0cm",
+								}
+							},
+							{
+								"user": {
+									"u_name": "165.0.cm",
+									"hms": "156.0kg",
+									"talk": "15.0cm",
+								}
+							}
+							
+						]
+						
+					}
+					
+				],
 				nav:[
 					{
 						name:"云相册",
@@ -135,6 +206,13 @@
 			},
 			
 			/**
+			 * @param {Object} 首页头像事件
+			 */
+			imgpopup(){
+				this.$refs["operation"].open()
+			},
+			
+			/**
 			 * nav栏目跳转事件
 			 */
 			baby(id){
@@ -178,7 +256,7 @@
 			}
 		},
 		onLoad(opt) {
-			this.height=this.$store.state.system.screenHeight+200
+			this.height=this.$store.state.system.screenHeight
 			
 			this.isShowBaby=opt.type||''
 		}
@@ -189,6 +267,7 @@
 	// page{
 	// 	background-color: #fff;
 	// }
+
 	.content{
 		 background-color: #F5F5F5;
 		.item{
@@ -235,8 +314,9 @@
 			background-position: center;
 			background-repeat: no-repeat;
 			background-size: cover;
-			top: 0;
-			position: fixed;
+			position: relative;
+			// top: 0;
+			// position: fixed;
 			width: 100%;
 			.logo{
 				display: flex;flex-direction: row;
@@ -285,8 +365,9 @@
 			background-color: #fff;
 			align-items: center;
 			height:120upx;
-			position: fixed;
-			top: 340upx;width:100%;
+			// position: fixed;
+			// top: 340upx;
+			width:100%;
 			border:1upx solid #eee;
 			.img{
 				width:60upx;height:60upx;
@@ -298,8 +379,9 @@
 		}
 		
 		.timeLine{
-			position:fixed;top:500upx;
+			// position:fixed;top:500upx;
 			display: flex;
+			margin-top: 20upx;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
@@ -308,7 +390,7 @@
 				display: flex;
 				align-items: center;
 				flex-direction: column;
-				padding-bottom:200upx;
+				// padding-bottom:200upx;
 			}
 			.item-menu{
 				.day{

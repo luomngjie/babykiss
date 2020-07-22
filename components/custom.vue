@@ -1,8 +1,8 @@
 <template>
 	<view class="cu-navbar">
 		<view :class="{'cu-navbar--fixed': fixed,'cu-navbar--shadow':border,'cu-navbar--border':border}" 
-		 class="cu-navbar__content">
-		 <!-- :style="{'background': backgroundColorRgba}" -->
+		 class="cu-navbar__content" :style="{'background': backgroundColorRgba}">
+		
 			<block v-if="backgroundImg">
 				<image class="navbgimg" :src="backgroundImg" mode=""></image>
 			</block>
@@ -451,10 +451,10 @@
 			setBgColor() {
 				var that = this;
 				//如果存在背景图片则背景颜色失效
-				// if(that.backgroundImg){
-				// 	that.backgroundColorRgba = "url(" + that.backgroundImg + ")";
-				// 	return;
-				// }
+				if(that.backgroundImg){
+					that.backgroundColorRgba = "url(" + that.backgroundImg + ")";
+					return;
+				}
 
 				//背景颜色
 				if (typeof that.backgroundColor[0] == 'object') {
