@@ -566,7 +566,7 @@
 				align-items: center;
 				font-size: 36upx;
 				font-family: PingFang SC;
-				font-weight: bold;
+				//font-weight: bold;
 
 			}
 

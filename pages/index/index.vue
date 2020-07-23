@@ -14,7 +14,7 @@
 					</view>
 				</view>
 				<view class="nav">
-					<view class="nav-item" v-for="(item,idnex) in nav" :key="item.id" @tap.stop="baby(item.id)">
+					<view class="nav-item" v-for="(item,idnex) in nav" :key="item.id" @tap.stop="baby(item.id,item.url)">
 						{{item.name}}
 					</view>
 				</view>
@@ -149,26 +149,23 @@
 					
 				],
 				nav:[
-					{
-						name:"云相册",
-						id:0
-					},
+					
 					{
 						name:"生长记录",
-						id:1
+						id:1,
+						url:"/pages/index/growth_record/growth_record"
 					},
 					{
 						name:"疫苗接种",
-						id:2
+						id:2,
+						url:"/pages/index/Vaccination/Vaccination"
 					},
 					{
 						name:"大事记",
-						id:3
-					},
-					{
-						name:"1位亲",
-						id:4
-					},
+						id:3,
+						url:"/pages/index/memorabilia/memorabilia"
+					}
+					
 				],
 				height:0
 			}
@@ -215,8 +212,12 @@
 			/**
 			 * nav栏目跳转事件
 			 */
-			baby(id){
-				console.log(id)
+			baby(id,url){
+				id==1?uni.navigateTo({url:url})
+				:id==2?uni.navigateTo({url:url})
+				:id==3?uni.navigateTo({url:url})
+				:''
+				
 			},
 			
 			/**

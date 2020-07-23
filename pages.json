@@ -65,6 +65,22 @@
             "path" : "pages/index/baby_infor/baby_infor",
             "style":{"navigationStyle": "custom"}
         }
+        ,{//生长记录
+            "path" : "pages/index/growth_record/growth_record",
+             "style":{"navigationStyle": "custom"}
+        }
+        ,{//疫苗接种
+            "path" : "pages/index/Vaccination/Vaccination",
+             "style":{"navigationStyle": "custom"}
+        }
+        ,{//大事记
+            "path" : "pages/index/memorabilia/memorabilia",
+             "style":{"navigationStyle": "custom"}
+        }
+        ,{//生长记录添加
+            "path" : "pages/index/growth_record/add",
+            "style":{"navigationStyle": "custom"}
+        }
     ],
 	
 	"tabBar": {

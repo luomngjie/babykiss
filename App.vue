@@ -37,7 +37,7 @@ export default {
 	/* #endif */
 	.content{
 		width:100%;
-		background:#fff;
+		/* background:#fff; */
 	}
 	page{
 		background-color: #F5F5F5;
