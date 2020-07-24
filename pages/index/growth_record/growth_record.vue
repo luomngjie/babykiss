@@ -17,7 +17,7 @@
 					</block>
 					</view>
 				</scroll-view>
-				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}">
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==0">
 					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
 							<scroll-view class="swiper-one-list" scroll-y="true" :style="{'height':height-110+'px'}" @scrolltolower="onReachScollBottom">
@@ -42,6 +42,30 @@
 								</view>
 								
 							</scroll-view>
+						</swiper-item>
+					</block>
+				</swiper>
+				
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==1">
+					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
+						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
+							<view>{{item.name}}</view>
+						</swiper-item>
+					</block>
+				</swiper>
+				
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==2">
+					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
+						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
+							<view>{{item.name}}</view>
+						</swiper-item>
+					</block>
+				</swiper>
+				
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==3">
+					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
+						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
+							<view>{{item.name}}</view>
 						</swiper-item>
 					</block>
 				</swiper>

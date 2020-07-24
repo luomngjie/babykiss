@@ -1,8 +1,8 @@
 <template>
 	<view class="cu-navbar">
 		<view :class="{'cu-navbar--fixed': fixed,'cu-navbar--shadow':border,'cu-navbar--border':border}" 
-		 class="cu-navbar__content" :style="{'background': backgroundColorRgba}">
-		
+		 class="cu-navbar__content" :style="{'background':rightIcon=='camera'?'transparent':backgroundColorRgba}">
+		<!-- :style="{'background': backgroundColorRgba}" -->
 			<block v-if="backgroundImg">
 				<image class="navbgimg" :src="backgroundImg" mode=""></image>
 			</block>
@@ -15,7 +15,7 @@
 							<!-- <uni-icons :type="back ? 'arrowleft' : leftIcon" :color="colorInfo" size="28"/> -->
 							<text class="cuIcon-back font-45" :class="{color: colorInfo}"></text>
 						</view>
-						<view v-if="leftText.length" :class="{'cu-navbar-btn-icon-left':!leftIcon.length}" class="cu-navbar-btn-text cu-navbar__content_view">
+						<view v-if="leftText.length" :class="{'cu-navbar-btn-icon-left':!leftIcon.length}" class="cu-navbar-btn-text cu-navbar__content_view" :style="{'color':rightIcon=='camera'?'#fff':''}">
 							{{ leftText }}
 						</view>
 
@@ -41,12 +41,12 @@
 				</view>
 
 				<view :style="[{'flex': flex?'1':''}]" :class="[title.length?'cu-navbar__header-btns-right':'',flex?'':'padding-r-30']"
-				 class="cu-navbar__header-btns cu-navbar__content_view" @tap="onClickRight" v-if="rightSlot" style="margin-right: 30upx;display: flex;justify-content: center;">
+				 class="cu-navbar__header-btns cu-navbar__content_view" @tap="onClickRight" v-if="rightSlot" style="display: flex;justify-content: center;">
 					<!-- 优先显示图标 -->
 					<block v-if="rightIcon.length || rightText.length">
-						<view class="cu-navbar__content_view" v-if="rightIcon.length">
+						<view class="cu-navbar__content_view" v-if="rightIcon.length" :class="rightIcon=='camera'?'photoItem':''">
 							<image src="../static/img/add.png" v-if="rightIcon=='jia'" class="img"></image>
-							<image src="../static/img/carame.png" v-else-if="rightIcon=='camera'" class="img"></image>
+							<image src="../static/img/xiangji.png" v-else-if="rightIcon=='camera'" class="img"></image>
 							<text class="cuIcon-right font-45" :class="{color: colorInfo}" v-else></text>
 						</view>
 						<view v-if="rightText.length" class="cu-navbar-btn-text cu-navbar__content_view" style="font-size: 13px;">{{ rightText }}</view>
@@ -559,6 +559,16 @@
 				z-index: 0;
 				width: 100%;
 			}
+			
+			.photoItem{
+				width: 30px;
+				height: 30px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 50%;
+				background: #FFC227;
+			}
 
 			.cu-navbar__content_view {
 				// line-height: $nav-height;
@@ -644,7 +654,7 @@
 		}
 
 		&--shadow {
-			box-shadow: 0 1upx 1upx #f5f5f5;
+			//box-shadow: 0 1upx 1upx #f5f5f5;
 		}
 
 		&--border:after {
@@ -653,7 +663,7 @@
 			bottom: 0;
 			left: 0;
 			right: 0;
-			height: 2upx;
+			//height: 2upx;
 			content: '';
 			-webkit-transform: scaleY(.5);
 			transform: scaleY(.5);

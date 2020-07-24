@@ -1,9 +1,17 @@
 <template>
-	<view class="content" >
+	<view class="content" :style="{'height':height-80+'px'}">
 		<template v-if="isShowBaby=='addbaby'">
-			
-			<custom leftText="宝宝"  :back="false" rightIcon="camera" @click-left="left" leftIcon="0" :backgroundImg="backgroundImg"></custom>
-			<scroll-view  style="height:100%;"  @scrolltolower="onReachScollBottom" scroll-y="true">
+			<!-- <view class="navBar" >
+				<view class="leftNav">
+					<image src="../../static/img/backw.png" class="navImg"></image>
+					<view class="name">宝宝</view>
+				</view>
+				<view class="photo-item">
+					<image src="../../static/img/xiangji.png" class="pahoto"></image>
+				</view>
+			</view> -->
+			<custom leftText="宝宝"  :back="false" rightIcon="camera" @click-left="left" leftIcon="0" class="navBar" @click-right="rightShow"></custom>
+			<scroll-view  :style="{'height':height-90+'px','position':'absolute'}"  @scrolltolower="onReachScollBottom" scroll-y="true" class="scroller" scroll-with-animation="true">
 				<!-- :style="{'height':height+'px'}" -->
 			<view class="background">
 				<view class="logo">
@@ -56,7 +64,7 @@
 			</uni-popup>
 			
 			</scroll-view>
-			
+			<view class="hide" v-if="isShows" @tap.stop="close"></view>
 		</template>
 		<template v-else>
 			<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false"></custom>
@@ -94,6 +102,8 @@
 			return {
 				backgroundImg:require('../../static/img/banner.jpg'),
 				isShowBaby:'',
+				isShows:false,//是否显示遮罩层
+				color:[525,255,30],
 				talk: [
 					{
 						"id": 1,
@@ -167,7 +177,9 @@
 					}
 					
 				],
-				height:0
+				height:0,
+				scrollSize:0,//页面滚动距离
+				topRange:0//获取距离顶部的高度并保存
 			}
 		},
 		methods: {
@@ -249,17 +261,67 @@
 			 * @param {Object} opt
 			 * 滚动底部事件，无无限加载
 			 */
-			onReachScollBottom(){
+			onReachScollBottom(e){
 				uni.showToast({
 					title:"到底了",
 					icon:"none"
 				})
+				
+			},
+			
+			/**
+			 * 下拉刷新
+			 */
+			refresh(){
+				
+			},
+			
+			/**
+			 * @param {Object} opt右侧相机点击事件
+			 */
+			rightShow(){
+				this.isShows=true
+			},
+			
+			/**
+			 * @param {Object} opt关闭遮罩层
+			 */
+			close(){
+				this.isShows=false
 			}
 		},
 		onLoad(opt) {
 			this.height=this.$store.state.system.screenHeight
-			
+			uni.startPullDownRefresh();
 			this.isShowBaby=opt.type||''
+			
+			
+				
+		},
+		
+		mounted() {
+			
+			
+			
+		},
+		
+		/**
+		 * 下拉刷新
+		 */
+		onPullDownRefresh(){
+			this.refresh()
+			setTimeout(()=>{
+				 uni.stopPullDownRefresh();
+			},2000)
+		},
+		
+		/**
+		 * 监听页面滚动距离
+		 */
+		onPageScroll(e) {
+			this.scrollSize = e.scrollTop
+			
+			console.log(e)
 		}
 	}
 </script>
@@ -271,6 +333,48 @@
 
 	.content{
 		 background-color: #F5F5F5;
+		 .hide{
+			 background-color: #fff;
+			 width: 100%;height:100%;
+			 position: fixed;opacity: .9;
+			 top: 0;left: 0;right: 0;
+			 bottom: 0;z-index: 10000;
+		 }
+		 .navBar{
+			 display: flex;
+			 justify-content: space-between;
+			align-items: center;
+			 position: fixed;
+			 width: 100%;
+			 //margin:20upx 0;
+			
+			 z-index: 1;
+			 .leftNav{
+				 display: flex;
+				 flex-direction: row;
+				 justify-content: flex-start;
+				 align-items: center;
+				 .navImg{
+					 width:40upx;height:40upx;
+				 }
+				 view{
+					 font-size: 28upx;
+					 color:#fff;
+				 }
+			 }
+			 .photo-item{
+				 width:60upx;height:60upx;
+				 border-radius: 50%;
+				 display: flex;
+				 align-items: center;
+				 justify-content: center;
+				 background-color: #FFC227;
+				 .pahoto{
+					 width:40upx;height:40upx
+				 }
+			 }
+			
+		 }
 		.item{
 			padding:0 20upx;
 			margin:20upx 0;
