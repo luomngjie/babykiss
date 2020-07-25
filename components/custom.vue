@@ -1,7 +1,7 @@
 <template>
 	<view class="cu-navbar">
 		<view :class="{'cu-navbar--fixed': fixed,'cu-navbar--shadow':border,'cu-navbar--border':border}" 
-		 class="cu-navbar__content" :style="{'background':rightIcon=='camera'?'transparent':backgroundColorRgba}">
+		 class="cu-navbar__content" :style="{'background':transparent}">
 		<!-- :style="{'background': backgroundColorRgba}" -->
 			<block v-if="backgroundImg">
 				<image class="navbgimg" :src="backgroundImg" mode=""></image>
@@ -513,6 +513,9 @@
 		},
 		destroyed() {
 
+		},
+		onLoad() {
+			
 		}
 
 

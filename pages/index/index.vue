@@ -1,17 +1,23 @@
 <template>
 	<view class="content" :style="{'height':height-80+'px'}">
 		<template v-if="isShowBaby=='addbaby'">
-			<!-- <view class="navBar" >
+			<view class="navBar" :style="{'background':scrollTop>=100?'#FFC227':''}">
 				<view class="leftNav">
 					<image src="../../static/img/backw.png" class="navImg"></image>
 					<view class="name">宝宝</view>
 				</view>
-				<view class="photo-item">
-					<image src="../../static/img/xiangji.png" class="pahoto"></image>
+				<view style="color:#fff;font-size: 26upx;" v-if="scrollTop>=100">
+					{{titleCen}}
 				</view>
-			</view> -->
-			<custom leftText="宝宝"  :back="false" rightIcon="camera" @click-left="left" leftIcon="0" class="navBar" @click-right="rightShow"></custom>
-			<scroll-view  :style="{'height':height-90+'px','position':'absolute'}"  @scrolltolower="onReachScollBottom" scroll-y="true" class="scroller" scroll-with-animation="true">
+				<view class="photo-item">
+					<image src="../../static/img/icon_sosuo_mian.png" class="pahoto" v-if="scrollTop>=100" ></image>
+					<image src="../../static/img/xiangji.png" class="pahoto" @click="rightShow"></image>
+				</view>
+			</view>
+				
+			</custom>
+			<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" 
+			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
 				<!-- :style="{'height':height+'px'}" -->
 			<view class="background">
 				<view class="logo">
@@ -32,9 +38,6 @@
 				<image src="../../static/img/cao.png" class="img"></image>
 				<view class="tips">和宝妈一起见证宝宝的成长吧</view>
 			</view>
-			
-			
-				
 			
 			
 			<view class="timeLine">
@@ -64,7 +67,28 @@
 			</uni-popup>
 			
 			</scroll-view>
-			<view class="hide" v-if="isShows" @tap.stop="close"></view>
+			<view class="hide" v-if="isShows" @tap.stop="close" >
+				<view class="top">
+					<view class="time">
+						<view class="day">{{week.day}}</view>
+						<view class="week">
+							<view class="weeks">{{week.week}}</view>
+							<view class="weeks">{{week.month}}/{{week.year}}</view>
+						</view>
+						<view class="numday">出生第14天</view>
+					</view>
+					<image src="../../static/img/banner.jpg" class="bg"></image>
+				</view>
+				<view class="bottomItem" >
+					<view class="items" v-for="(item,index) in bottom" :key="index" >
+						<view class="menu" :style="{'background':item.bg}">
+							<image :src="item.img" class="item-img"></image>
+						</view>
+						<view class="name" style="font-size: 22upx;">{{item.name}}</view>
+					</view>
+					
+				</view>
+			</view>
 		</template>
 		<template v-else>
 			<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false"></custom>
@@ -101,6 +125,24 @@
 		data() {
 			return {
 				backgroundImg:require('../../static/img/banner.jpg'),
+				animationData:{},
+				bottom:[
+					{
+						name:"日记",
+						img:"../../static/img/xiangji.png",
+						bg:"#FD8465"
+					},
+					{
+						name:"大事记",
+						img:"../../static/img/xiangji.png",
+						bg:"#7BC7F8"
+					},
+					{
+						name:"身高体重",
+						img:"../../static/img/xiangji.png",
+						bg:"#FFC12B"
+					}
+				],//底部功能块
 				isShowBaby:'',
 				isShows:false,//是否显示遮罩层
 				color:[525,255,30],
@@ -178,16 +220,64 @@
 					
 				],
 				height:0,
-				scrollSize:0,//页面滚动距离
-				topRange:0//获取距离顶部的高度并保存
+				background:([255,194,39]),
+				titleCen:"",
+				scrollTop:0,//页面滚动距离
+				week:{
+					year:'',
+					month:"",
+					day:"",
+					week:""
+				}//年月日
+				
 			}
 		},
+		onShow() {
+			
+		},
 		methods: {
+			/**
+			 * 获取当前日期
+			 */
+			getTime(){
+			
+				var date = new Date(),
+				year = date.getFullYear(),
+				month = date.getMonth() + 1,
+				day = date.getDate(),
+				week = date.getDay(),
+				hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours(),
+				minute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes(),
+				second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+				month >= 1 && month <= 9 ? (month = "0" + month) : "";
+				day >= 0 && day <= 9 ? (day = "0" + day) : "";
+				var timer = month + '月' + day+"日" 
+				var weekday=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+				this.week.year=year
+				this.week.month=month
+				this.week.day=day
+				this.week.week=weekday[week]
+				this.titleCen = timer
+				
+				return timer;
+			},
 			/**
 			 * 操作
 			 */
 			operation(){
 				this.$refs["popup"].open()
+			},
+			
+			scroll(e){
+				this.scrollTop=e.detail.scrollTop
+				if(e.detail.scrollTop>100){
+					this.getTime()
+					
+				}
+				
+				//this.background="rgba(5,5,155,.5)"
+				
+				
 			},
 			
 			/**
@@ -211,7 +301,7 @@
 			 * 宝宝详情
 			 */
 			detail(index){
-				
+				this.isShowBaby="addbaby"
 			},
 			
 			/**
@@ -281,6 +371,7 @@
 			 */
 			rightShow(){
 				this.isShows=true
+				this.getTime()
 			},
 			
 			/**
@@ -297,6 +388,11 @@
 			
 			
 				
+		},
+		
+		onUnload() {
+		  this.animationData = {}
+		  // 页面关闭后清空数据
 		},
 		
 		mounted() {
@@ -320,8 +416,7 @@
 		 */
 		onPageScroll(e) {
 			this.scrollSize = e.scrollTop
-			
-			console.log(e)
+
 		}
 	}
 </script>
@@ -333,19 +428,98 @@
 
 	.content{
 		 background-color: #F5F5F5;
+		 .scroller{
+			//  position:sticky;
+			// top: var(--window-10);
+		 }
 		 .hide{
-			 background-color: #fff;
+			 //background-color: #fff;
 			 width: 100%;height:100%;
 			 position: fixed;opacity: .9;
+			 background-color: #fff;
 			 top: 0;left: 0;right: 0;
 			 bottom: 0;z-index: 10000;
+			 .top{
+				 display: flex;
+				 justify-content: space-between;
+				 margin-top: 33upx;
+				 .time{
+					 width: 200upx;
+					 display: flex;
+					 flex-direction: row;
+					 flex-wrap: wrap;
+					 align-items: center;
+					 margin-left: 33upx;
+					 .day{
+						 font-size: 50upx;
+						 margin-right: 13upx;
+						 
+					 }
+					 .week{
+						 font-size: 20upx;
+					 }
+					 .numday{
+						 font-size: 28upx;
+					 }
+				 }
+				 .bg{
+					 width:220upx;height:180upx;
+					  margin-right: 33upx;
+				 }
+			 }
+			 
+			 .bottomItem{
+				 display: flex;
+				 justify-content:space-around; //flex-start;
+				 position: fixed;
+				 width: 100%;
+				 bottom: 120upx;
+				 flex-direction: row;
+				 flex-wrap: wrap;
+				 .items{
+					 // width: 60upx;
+					 // height:100upx;
+					 border-radius:50%;
+					 display: flex;
+					flex-direction: column;
+					 justify-content: center;
+					 align-items: center;
+					 margin:20upx 40upx;
+					 .menu{
+						align-items: center;
+						 width: 100upx;
+						  height:100upx;
+						  border-radius:50%;
+						  display: flex;
+						 flex-direction: column;
+						justify-content: center;
+						  //margin:20upx 40upx;
+						  .item-img{
+							  width:50upx;height:50upx;
+						  }
+					 }
+					 .name{
+						 margin-top: 15upx;
+					 }
+					
+				 }
+			 }
+			  // animation: fadeOut .5s;
 		 }
+		 @keyframes fadeIn {
+		   0%    {opacity: 0;background-color: transparent;}
+		   100%  {opacity: 0.9;background-color: #fff;}
+		 }
+		 
+		
 		 .navBar{
 			 display: flex;
 			 justify-content: space-between;
 			align-items: center;
 			 position: fixed;
 			 width: 100%;
+			 padding: 10upx 0;
+			 // background-color: #FFC227;
 			 //margin:20upx 0;
 			
 			 z-index: 1;
@@ -355,7 +529,7 @@
 				 justify-content: flex-start;
 				 align-items: center;
 				 .navImg{
-					 width:40upx;height:40upx;
+					 width:30upx;height:30upx;
 				 }
 				 view{
 					 font-size: 28upx;
@@ -363,14 +537,16 @@
 				 }
 			 }
 			 .photo-item{
-				 width:60upx;height:60upx;
+				height:60upx;
 				 border-radius: 50%;
 				 display: flex;
 				 align-items: center;
 				 justify-content: center;
 				 background-color: #FFC227;
+				 margin:0 10upx;
 				 .pahoto{
-					 width:40upx;height:40upx
+					 width:40upx;height:40upx;
+					 margin:0 10upx;
 				 }
 			 }
 			
