@@ -47,6 +47,9 @@ Vue.component('uni-popup',uniPopup)
 import modal from '@/components/modal/modal.vue'
 Vue.component('cu-modal',modal)
 
+import uniIcons from "@/components/uni-icons/uni-icons.vue"
+Vue.component('uniIcons',uniIcons)
+
 App.mpType = 'app'
 
 const app = new Vue({

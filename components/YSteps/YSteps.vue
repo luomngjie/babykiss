@@ -1,36 +1,42 @@
 <template>
 	<view class="container">
 		<view class="set_box" >
-			<!-- <view class="set_time">
-				<view>{{item.MMDD}}</view>
-			</view> -->
 			<!-- 步骤条 -->
 			<view class="set-1">
 				<view class="set-2" v-for="(item,index) in talk" :key="index">
 					<view class="quan" ></view>
 					<view style="font-size: 32upx;">{{item.MMDD}}<text style="font-size: 20upx;margin-left: 10upx;">第11天</text></view>
-					<view class="tlak_o" v-for="(cItem,index_) in item.data" >
-						<view class="menu" v-if="item.id==3">
-							<view class="list">身高<text style="margin-left:10upx;">{{cItem.user.u_name}}</text></view>
-							<view class="list">体重<text style="margin-left:10upx;">{{cItem.user.hms}}</text></view>
-							<view class="list">头围<text style="margin-left:10upx;">{{cItem.user.talk}}</text></view>
-						</view>
-						<view class="menu" v-if="item.id==2">
-							<view class="" style="font-size: 12px;"><text style="margin-left:10upx;">{{cItem.user.talk}}</text></view>
-							
-						</view>
-						<view class="col-img" v-if="item.id==1">
-							<image :src="cItem.user.image" class="menu-image"></image>
-							<view class="conten">{{cItem.user.talk}}</view>
-							<view class="conten first">{{cItem.user.hms}}</view>
-						</view>
-						<view class="tabbar">
-							<view class="name">
-								<text>爸爸,1小时前</text>
+					<template v-if="type=='index'">
+						<view class="tlak_o" v-for="(cItem,index_) in item.data" >
+							<view class="menu" v-if="item.id==3">
+								<view class="list">身高<text style="margin-left:10upx;">{{cItem.user.u_name}}</text></view>
+								<view class="list">体重<text style="margin-left:10upx;">{{cItem.user.hms}}</text></view>
+								<view class="list">头围<text style="margin-left:10upx;">{{cItem.user.talk}}</text></view>
 							</view>
-							<image src="../../static/img/mess.png" class="image"></image>
+							<view class="menu" v-if="item.id==2">
+								<view class="" style="font-size: 12px;"><text style="margin-left:10upx;">{{cItem.user.talk}}</text></view>
+								
+							</view>
+							<view class="col-img" v-if="item.id==1">
+								<image :src="cItem.user.image" class="menu-image"></image>
+								<view class="conten">{{cItem.user.talk}}</view>
+								<view class="conten first">{{cItem.user.hms}}</view>
+							</view>
+							<view class="tabbar">
+								<view class="name">
+									<text>爸爸,1小时前</text>
+								</view>
+								<image src="../../static/img/mess.png" class="image"></image>
+							</view>
 						</view>
-					</view>
+					</template>
+					
+					<template v-if="type=='note'">
+						<view class="note" @click="detail(item)" v-for="(items,j) in item.data">
+							<view class="tip">{{items.user.hms}}</view>
+							<view class="tip con">{{items.user.talk}}</view>
+						</view>
+					</template>
 					
 				</view>
 			</view>
@@ -45,6 +51,10 @@
 			talk:{
 				type:Array,
 				default:''
+			},
+			type:{
+				type:String,
+				default:""
 			}
 		},
 		data() {
@@ -52,7 +62,14 @@
 				
 			}
 		},
-		methods: {}
+		methods: {
+			/**
+			 * 宝宝大事记时间线的点击事件
+			 */
+			detail(index){
+				this.$emit("fun",index)
+			}
+		}
 	}
 </script>
 
@@ -158,10 +175,29 @@
 				}
 			}
 			
-			.like_ {
-				width: 100%;
-				min-height: 100rpx;
-
+		}
+		.note{
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			font-size: 26upx;
+			background-color: #fff;
+			height:180upx;
+			width:640upx;
+			border-radius: 5px;
+			margin-top: 13upx;
+			.con{
+				background-color: #eee;
+				width: 160upx;
+				height: 160upx;
+				border-radius: 5px;
+			}
+			.tip{
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin: 0 33upx;
 			}
 		}
 	}

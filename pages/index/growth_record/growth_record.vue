@@ -22,7 +22,7 @@
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
 							<scroll-view class="swiper-one-list" scroll-y="true" :style="{'height':height-110+'px'}" @scrolltolower="onReachScollBottom">
 								<view class="swiper-list-entity" >
-									<view class="menu-item" v-for="index in 5">
+									<view class="menu-item" v-for="index in 5" @click="detail(index)">
 										<view class="tips">
 											<view class="top">
 												<text class="day">2020-07-22</text>
@@ -69,6 +69,33 @@
 						</swiper-item>
 					</block>
 				</swiper>
+				<uni-popup type="center" ref="popup" zIndex="999">
+					<view class="popup-center">
+						<view class="item-list">操作</view>
+						<view class="line"/>
+						<view class="item-list" @click="modify">修改</view>
+						<view class="line"/>
+						<view class="item-list" @tap.stop="deleted">删除</view>
+						<view class="item-list" @tap.stop="cancel">取消</view>
+					</view>
+				</uni-popup>
+				
+				<!-- <uni-popup type="center" ref="delete" zIndex="999">
+					<view class="popup-delete">
+						<view class="item-list">提示</view>
+						<view class="vontent">删除后其他亲友也将无法查看这条记录，确定继续么?</view>
+						<view class="btn">
+							<view class="ok"></view>
+							<view class="no"></view>
+						</view>
+					</view>
+				</uni-popup> -->
+				<cu-modal ref="quanxian"  @cancel='modalHide'  @Confirm="modalConfirm">
+					<!-- :cancelText='cancel' :confirmText='confirmbtn' -->
+					<text slot="content">
+						删除后其他亲友也将无法查看这条记录，确定继续吗?
+					</text>
+				</cu-modal>
 		</view>
 		
 		
@@ -157,14 +184,57 @@
 						title:"到底了",
 						icon:"none"
 					})
+				},
+				
+				/*
+				*列表详情
+				 */
+				detail(index){
+					this.$refs["popup"].open()
+				},
+				
+				/**
+				 * 修改
+				 */
+				modify(){
+					this.$refs["popup"].close()
+					uni.navigateTo({
+						url:"/pages/index/growth_record/add"
+					})
+				},
+				
+				/**
+				 * 删除
+				 */
+				deleted(index){
+					// uni.showModal({
+					// 	title: '提示',
+					// })
+					this.$refs["popup"].close()
+					this.$refs.quanxian.open()
+				},
+				
+				/**
+				 * prop框取消按钮
+				 */
+				cancel(){
+					this.$refs["popup"].close()
+				},
+				
+				/**
+				 * modal取消按钮
+				 */
+				modalHide(){
+					this.$refs.quanxian.close()
+				},
+				
+				/**
+				 * modal确定按钮
+				 */
+				modalConfirm(){
+					this.$refs.quanxian.close()
 				}
 				
-				// getDateList: function(tabIndex) {
-				// 	for (var i = 0; i < 20; i++) {
-				// 		var entity = this.menuTabs[tabIndex].name + (this.swiperDateList[tabIndex].length);
-				// 		this.swiperDateList[tabIndex].push(entity);
-				// 	}
-				// }
 		}
 	}
 </script>

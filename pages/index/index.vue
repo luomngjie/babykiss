@@ -52,7 +52,7 @@
 					</view>
 				</view>
 			</view>
-			<ysteps :talk="talk"></ysteps>
+			<ysteps :talk="talk" :type="type"></ysteps>
 			
 			<uni-popup type="center" ref="operation" zIndex="999">
 				<view class="popup-center">
@@ -80,7 +80,7 @@
 					<image src="../../static/img/banner.jpg" class="bg"></image>
 				</view>
 				<view class="bottomItem" >
-					<view class="items" v-for="(item,index) in bottom" :key="index" >
+					<view class="items" v-for="(item,index) in bottom" :key="index" :animation="animationData" >
 						<view class="menu" :style="{'background':item.bg}">
 							<image :src="item.img" class="item-img"></image>
 						</view>
@@ -144,6 +144,7 @@
 					}
 				],//底部功能块
 				isShowBaby:'',
+				type:"index",//用于时间线类型区别。区分首页时间线样式和宝宝大事记样式
 				isShows:false,//是否显示遮罩层
 				color:[525,255,30],
 				talk: [
@@ -223,6 +224,7 @@
 				background:([255,194,39]),
 				titleCen:"",
 				scrollTop:0,//页面滚动距离
+				timmer:null,//定时器
 				week:{
 					year:'',
 					month:"",
@@ -372,6 +374,7 @@
 			rightShow(){
 				this.isShows=true
 				this.getTime()
+				this.animate()
 			},
 			
 			/**
@@ -379,6 +382,32 @@
 			 */
 			close(){
 				this.isShows=false
+			},
+			
+			/**
+			 * @param {Object} opt遮罩层动画效果
+			 */
+			animate(){
+				let num=0
+				
+				this.timmer = setInterval(()=>{
+					num+=2
+					var animation = uni.createAnimation({  
+						duration:300,  
+						delay:0,  
+					})  
+					if(num === 10){  
+						num = 0  
+						clearInterval(this.timmer)
+					}else if(num ===0){  
+						// num = -20  
+						clearInterval(this.timmer)
+					}
+					this.animationData = animation  
+					
+					animation.translateY(-166).step()
+					this.animationData = animation.export()  
+				},300)
 			}
 		},
 		onLoad(opt) {
@@ -473,9 +502,10 @@
 				 justify-content:space-around; //flex-start;
 				 position: fixed;
 				 width: 100%;
-				 bottom: 120upx;
+				 //bottom: 120upx;
 				 flex-direction: row;
 				 flex-wrap: wrap;
+				  bottom: -166upx;
 				 .items{
 					 // width: 60upx;
 					 // height:100upx;
@@ -485,6 +515,9 @@
 					 justify-content: center;
 					 align-items: center;
 					 margin:20upx 40upx;
+					 //position: absolute;
+					 //bottom:-
+					//animation:fadeIn 1s linear;
 					 .menu{
 						align-items: center;
 						 width: 100upx;
@@ -493,6 +526,7 @@
 						  display: flex;
 						 flex-direction: column;
 						justify-content: center;
+						
 						  //margin:20upx 40upx;
 						  .item-img{
 							  width:50upx;height:50upx;
@@ -507,8 +541,9 @@
 			  // animation: fadeOut .5s;
 		 }
 		 @keyframes fadeIn {
-		   0%    {opacity: 0;background-color: transparent;}
-		   100%  {opacity: 0.9;background-color: #fff;}
+		   0%   {transform: translateY(80px);opacity: 0;}
+		  
+		   100% {transform: translateY(0px);opacity: 1}
 		 }
 		 
 		
@@ -707,21 +742,7 @@
 			}
 		}
 	}
-	.popup-center{
-		width:600upx;background-color: #fff;
-		border-radius: 7upx;
-		font-size: 22upx;
-		display: flex;
-		flex-direction: column;
-		.item-list{
-			padding:33upx;
-		}
-		.line{
-			border-bottom:1upx solid #eee;
-			margin:0 30upx
-		}
-		
-	}
+	
 	
 	
 	

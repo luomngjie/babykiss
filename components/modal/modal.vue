@@ -114,7 +114,7 @@
 			min-height: 379upx;
 			background: rgba(255, 255, 255, 1);
 			border-radius: 27upx;
-			padding: 35upx 53upx;
+			padding: 35upx 20upx;
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
@@ -139,7 +139,7 @@
 		}
 
 		&-btn {
-			width: 100%;
+			width: 80%;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;

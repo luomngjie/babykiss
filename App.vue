@@ -53,4 +53,19 @@ export default {
 	    -webkit-appearance: none;  
 	    background: transparent;  
 	}
+	.popup-center{
+		width:600upx;background-color: #fff;
+		border-radius: 7upx;
+		font-size: 22upx;
+		display: flex;
+		flex-direction: column;
+		.item-list{
+			padding:33upx;
+		}
+		.line{
+			border-bottom:1upx solid #eee;
+			margin:0 30upx
+		}
+		
+	}
 </style>

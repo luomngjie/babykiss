@@ -577,8 +577,10 @@
 				// line-height: $nav-height;
 				display: flex;
 				align-items: center;
-				font-size: 36upx;
+				font-size: 30upx;
 				font-family: PingFang SC;
+				display: flex;
+				justify-content: center;
 				//font-weight: bold;
 
 			}

@@ -82,6 +82,35 @@
             "path" : "pages/index/growth_record/add",
             "style":{"navigationStyle": "custom"}
         }
+        ,{//疫苗接种添加
+            "path" : "pages/index/Vaccination/add",
+            "style":{"navigationStyle": "custom"}
+        }
+        ,{//疫苗接种添加详情 分为自定义疫苗和系统疫苗
+            "path" : "pages/index/Vaccination/detail",
+             "style":{"navigationStyle": "custom"}
+        }
+        ,{//宝宝大事记添加
+            "path" : "pages/index/memorabilia/add/add",
+           "style":{"navigationStyle": "custom"}
+        }
+        ,{//宝宝大事记添加后的下一步
+            "path" : "pages/index/memorabilia/next/next",
+            "style":{"navigationStyle": "custom"}
+        }
+        ,{//大事记时间线详情
+            "path" : "pages/index/memorabilia/detail/detail",
+           "style":{"navigationStyle": "custom"}
+        }
+        ,{//所在位置
+            "path" : "pages/index/memorabilia/next/location",
+            "style":{"navigationStyle": "custom"}
+        }
+        ,{//位置搜索
+            "path" : "pages/index/memorabilia/next/search",
+           "style":{"navigationStyle": "custom"}
+        }
+       
     ],
 	
 	"tabBar": {
