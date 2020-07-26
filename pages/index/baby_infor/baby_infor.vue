@@ -14,7 +14,7 @@
 			<view class="item">
 				<view class="list">
 					<view class="name">生日</view>
-					<picker mode="date" :value="userInfo.date" :start="startDate" :end="endDate" @change="dateChange" class="inp" style="width:45%;">
+					<picker mode="date" :value="userInfo.date" :start="startDate" :end="endDate" @change="dateChange" class="inp" style="width:45%;" fields="day">
 						<view style="font-size: 24upx;">{{userInfo.date}}</view>
 					</picker>
 					<!-- <input type="text" placeholder="请输入宝宝的生日" placeholder-style="color:#DCDCDC;font-size:24upx" class="inp" v-model="userInfo.birthday"> -->

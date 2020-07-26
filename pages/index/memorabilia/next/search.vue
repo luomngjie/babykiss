@@ -25,9 +25,9 @@
 				</view>
 			</view>
 		</view>
-		<scroll-view  :style="{'height':height-100+'px'}"  @scrolltolower="onReachScollBottom"
+		<scroll-view  :style="{'height':height-110+'px'}"  @scrolltolower="onReachScollBottom"
 		 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
-			<view class="menu" :style="{'height':height-90+'px'}">
+			<view class="menu" :style="{'height':height-70+'px'}">
 				<view class="list" v-for="item in 13">
 					<view class="title">举要古药房</view>
 					<view class="tips">重庆市与i北区龙之你次啊少女的女氨基酸的封闭式的分布计算的难受的感觉是</view>
@@ -153,7 +153,7 @@
 		justify-content: flex-start;
 		flex-direction: column;
 		border-bottom: 1px solid #eee;
-		padding: 10upx 20upx;
+		padding: 20upx;
 	}
 	
 	.title{

@@ -22,7 +22,7 @@
 					接种日期
 				</view>
 				<view class="picker">
-					<picker mode="date" :value="parame.date" :start="startDate" :end="endDate" @change="bindDateChange">
+					<picker mode="date" :value="parame.date" :start="startDate" :end="endDate" @change="bindDateChange" fields="day">
 						<view class="" v-if="type!='list'">{{parame.date}}</view>
 						<view class="" v-else style="color:#6DD7A9">{{age}}</view>
 					</picker>

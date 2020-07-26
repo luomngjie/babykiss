@@ -13,7 +13,7 @@
 					日期
 				</view>
 				<view class="picker">
-					<picker mode="date" :value="parame.date" :start="startDate" :end="endDate" @change="bindDateChange">
+					<picker mode="date" :value="parame.date" :start="startDate" :end="endDate" @change="bindDateChange" fields="day">
 						<view class="">{{parame.date}}</view>
 					</picker>
 				</view>
@@ -31,7 +31,7 @@
 			})
 			return {
 				startDate:"2020/07/26",
-				endDate:'2030/07/26',
+				endDate:'2020/07/30',
 				parame:{
 					date: currentDate
 				},

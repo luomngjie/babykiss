@@ -59,7 +59,7 @@
 					<text>记录时间</text>
 				</view>
 				<view class="picker">
-					<picker mode="date" :value="parame.date" :start="startDate" :end="endDate" @change="bindDateChange">
+					<picker mode="date" :value="parame.date" :start="startDate" :end="endDate" @change="bindDateChange" fields="day">
 						<view class="" >{{parame.date}}</view>
 						
 					</picker>

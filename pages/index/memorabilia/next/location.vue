@@ -105,7 +105,7 @@
 				 flex-direction: row;
 				 justify-content: flex-start;
 				 align-items: center;
-				 margin:0 10upx;
+				 margin:0 40upx;
 				 .navImg{
 					 width:30upx;height:30upx;
 				 }
@@ -119,7 +119,7 @@
 				 display: flex;
 				 align-items: center;
 				 justify-content: center;
-				 margin:0 10upx;
+				 margin:0 40upx;
 				 .pahoto{
 					 width:40upx;height:40upx;
 					 margin:0 10upx;

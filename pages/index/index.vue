@@ -1,8 +1,8 @@
 <template>
 	<view class="content" :style="{'height':height-80+'px'}">
 		<template v-if="isShowBaby=='addbaby'">
-			<view class="navBar" :style="{'background':scrollTop>=100?'#FFC227':''}">
-				<view class="leftNav">
+			<view class="navBar" :style="{'background':scrollTop>=100?'#FFC227':''}" style="margin-top: 43upx;">
+				<view class="leftNav" @click="left">
 					<image src="../../static/img/backw.png" class="navImg"></image>
 					<view class="name">宝宝</view>
 				</view>
@@ -108,7 +108,7 @@
 					<view class="line"/>
 					<view class="item-list" @click="establish">添加宝宝</view>
 					<view class="line"/>
-					<view class="item-list" @tap.stop="close">取消</view>
+					<view class="item-list" @tap.stop="closes">取消</view>
 				</view>
 			</uni-popup>
 		</template>
@@ -295,7 +295,7 @@
 			/**
 			 * 取消
 			 */
-			close(){
+			closes(){
 				this.$refs["popup"].close()
 			},
 			
@@ -471,7 +471,7 @@
 			 .top{
 				 display: flex;
 				 justify-content: space-between;
-				 margin-top: 33upx;
+				 margin-top: 70upx;
 				 .time{
 					 width: 200upx;
 					 display: flex;
@@ -563,6 +563,7 @@
 				 flex-direction: row;
 				 justify-content: flex-start;
 				 align-items: center;
+				  margin:0 40upx;
 				 .navImg{
 					 width:30upx;height:30upx;
 				 }
@@ -578,7 +579,7 @@
 				 align-items: center;
 				 justify-content: center;
 				 background-color: #FFC227;
-				 margin:0 10upx;
+				 margin:0 40upx;
 				 .pahoto{
 					 width:40upx;height:40upx;
 					 margin:0 10upx;
