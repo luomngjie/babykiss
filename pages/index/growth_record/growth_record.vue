@@ -1,6 +1,7 @@
 <template>
 	<view class="content">
-		<custom :back="true" @click-right="add" title="生长记录" rightText="添加"></custom>
+		<custom :back="true" @click-right="add" title="生长记录" rightText="添加" :bg="'#fff'"
+			:statusBarBackground="'#fff'"></custom>
 		
 		<view class="body-view">
 				<scroll-view class="top-menu-view" scroll-x="true" :scroll-left="scrollLeft">
@@ -17,12 +18,12 @@
 					</block>
 					</view>
 				</scroll-view>
-				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==0">
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-110+'px'}" v-if="currentTab==0">
 					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
-							<scroll-view class="swiper-one-list" scroll-y="true" :style="{'height':height-110+'px'}" @scrolltolower="onReachScollBottom">
+							<scroll-view class="swiper-one-list" scroll-y="true" :style="{'height':height-105+'px'}" @scrolltolower="onReachScollBottom">
 								<view class="swiper-list-entity" >
-									<view class="menu-item" v-for="index in 5" @click="detail(index)">
+									<view class="menu-item" v-for="index in 15" @click="detail(index)">
 										<view class="tips">
 											<view class="top">
 												<text class="day">2020-07-22</text>

@@ -1,17 +1,14 @@
 <template>
 	<view class="content">
-		<view class="navBar" >
-			<view class="leftNav" @click="left">
-				<view class="name" style="color:black">取消</view>
+		<custom  :back="false" leftText="取消"
+			 @click-left="left" color="#aaa"
+			:title="'所在位置'" :statusBarBackground="'#fff'" :bg="'#fff'">
+			<view slot="right" >
+				<view class="photo-item" >
+					<image src="../../../../static/img/se.png" class="pahoto" @click="right" ></image>
+				</view>
 			</view>
-			<view style="font-size: 26upx;" >
-				所在位置
-			</view>
-			<view class="photo-item" @click="right">
-				
-				<image src="../../../../static/img/se.png" class="pahoto"></image>
-			</view>
-		</view>
+		</custom>
 	</view>
 </template>
 
@@ -92,40 +89,16 @@
 
 <style lang="scss">
 	.content{
-		.navBar{
+		.photo-item{
+			height:60upx;
 			 display: flex;
-			 justify-content: space-between;
 			 align-items: center;
-			 background-color: #fff;
-			 margin-top: 73upx;
-			 width: 100%;
-			 padding: 10upx 0;
-			 .leftNav{
-				 display: flex;
-				 flex-direction: row;
-				 justify-content: flex-start;
-				 align-items: center;
-				 margin:0 40upx;
-				 .navImg{
-					 width:30upx;height:30upx;
-				 }
-				 view{
-					 font-size: 28upx;
-					 color:#fff;
-				 }
+			 justify-content: center;
+			 margin:0 40upx;
+			 .pahoto{
+				 width:40upx;height:40upx;
+				 margin:0 10upx;
 			 }
-			 .photo-item{
-				height:60upx;
-				 display: flex;
-				 align-items: center;
-				 justify-content: center;
-				 margin:0 40upx;
-				 .pahoto{
-					 width:40upx;height:40upx;
-					 margin:0 10upx;
-				 }
-			 }
-					
 		}
 	}
 </style>

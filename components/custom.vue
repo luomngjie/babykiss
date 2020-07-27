@@ -1,14 +1,14 @@
 <template>
 	<view class="cu-navbar">
 		<view :class="{'cu-navbar--fixed': fixed,'cu-navbar--shadow':border,'cu-navbar--border':border}" 
-		 class="cu-navbar__content" :style="{'background':transparent}">
+		 class="cu-navbar__content" >
 		<!-- :style="{'background': backgroundColorRgba}" -->
 			<block v-if="backgroundImg">
 				<image class="navbgimg" :src="backgroundImg" mode=""></image>
 			</block>
 
 			<view :style="{ height: statusBarHeight ,'background': statusBarBackground}" class="cu-status-bar" v-if="statusBar"></view>
-			<view :style="{color:colorInfo,height: height,'line-height':height}" class="hd cu-navbar__header cu-navbar__content_view">
+			<view :style="{color:colorInfo,height: height,'line-height':height,'background':bg}"  class="hd cu-navbar__header cu-navbar__content_view">
 				<view class="cu-navbar__header-btns cu-navbar__content_view" @tap="onClickLeft" v-if="leftSlot" :style="[{'color': colorInfo},{'flex': flex?'1':''}]">
 					<block v-if="leftText.length || leftIcon.length || back">
 						<view v-if="leftIcon.length || back" :class="back ? 'left_back' : ''" class="cu-navbar__content_view">
@@ -28,14 +28,14 @@
 				</view>
 
 
-				<view :style="[{'color': colorInfo},{'flex': flex?flex:''},{'padding-left': flex?'':'30upx'}]" class="cu-navbar__header-container cu-navbar__content_view"
+				<view :style="[{'color': colorInfo},{'flex': flex?flex:''},{'padding-left': flex?'':''}]" class="cu-navbar__header-container cu-navbar__content_view"
 				 style="overflow: hidden;">
 					<view v-if="title.length" class="cu-navbar__header-container-inner cu-navbar__content_view" style="display: inline-block;">{{ title }}</view>
 					<!-- 标题插槽 -->
 
-					<block v-else>
+					<block >
 						<slot name="centerAfter" v-if="centerSlidiSwitch && slotSlidiSwitch == 1" />
-						<slot v-else />
+						<slot v-else name="ceb"/>
 
 					</block>
 				</view>
@@ -92,6 +92,10 @@
 			};
 		},
 		props: {
+			bg:{
+				type:[String,Array],
+				default:''
+			},
 			flex: {
 				type: [String,Number],
 				default: ""

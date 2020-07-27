@@ -4,7 +4,7 @@
 			<!-- 步骤条 -->
 			<view class="set-1">
 				<view class="set-2" v-for="(item,index) in talk" :key="index">
-					<view class="quan" ></view>
+					<!-- <view class="quan" ></view> -->
 					<view style="font-size: 32upx;">{{item.MMDD}}<text style="font-size: 20upx;margin-left: 10upx;">第11天</text></view>
 					<template v-if="type=='index'">
 						<view class="tlak_o" v-for="(cItem,index_) in item.data" >
@@ -105,16 +105,16 @@
 	}
 
 	.set-2 {
-		.quan{
-			width: 10px;
-			height: 10px;
-			border-radius: 50%;
-			background-color: rgb(255, 255, 255);
-			position: absolute;
-			top: -10px;
-			left: -27.5px;
-			z-index: 10;
-		}
+		// .quan{//白点样式
+		// 	width: 10px;
+		// 	height: 10px;
+		// 	border-radius: 50%;
+		// 	background-color: rgb(255, 255, 255);
+		// 	position: absolute;
+		// 	top: -10px;
+		// 	left: -27.5px;
+		// 	z-index: 10;
+		// }
 		// min-height: 300upx;
 		border-radius: 10upx;
 		// width: 84%;
@@ -203,6 +203,7 @@
 	}
 
 	.set-2::after {
+		z-index: 1;
 		content: '';
 		/* 必须存在如果没有图标就留空 */
 		top: -20upx;
@@ -239,6 +240,7 @@
 		/* 图标样式在复制的图标文件中复制相对应的图标样式必须存在 */
 		-moz-osx-font-smoothing: grayscale;
 		/* 图标样式在复制的图标文件中复制相对应的图标样式必须存在 */
+		z-index: 10;
 	}
 
 	@font-face {

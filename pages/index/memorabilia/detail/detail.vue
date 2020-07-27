@@ -1,6 +1,6 @@
 <template>
 	<view class="content" :style="{'height':height-80+'px'}">
-		<view class="navBar" >
+		<!-- <view class="navBar" >
 			<view class="leftNav" @click="left">
 				<image src="../../../../static/img/left.png" class="navImg"></image>
 				<view class="name">宝宝</view>
@@ -12,7 +12,17 @@
 				
 				<image src="../../../../static/img/more.png" class="pahoto"></image>
 			</view>
-		</view>
+		</view> -->
+		<custom  :back="true"
+			class="custom" @click-left="left"
+			:title="'何苦'"  :bg="'#fff'"
+			:statusBarBackground="'#fff'">
+			<view slot="right" >
+				<view class="photo-item" >
+					<image src="../../../../static/img/more.png" class="pahoto" @click="right" ></image>
+				</view>
+			</view>
+		</custom>
 		
 		<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
 			<view class="tlak_o" >
@@ -160,41 +170,20 @@
 
 <style lang="scss" scoped>
 	.content{
-		.navBar{
+		.photo-item{
+			height:60upx;
+			 // border-radius: 50%;
 			 display: flex;
-			 justify-content: space-between;
 			 align-items: center;
-			 background-color: #fff;
-			 
-			 width: 100%;
-			 padding: 10upx 0;
-			 .leftNav{
-				 display: flex;
-				 flex-direction: row;
-				 justify-content: flex-start;
-				 align-items: center;
+			 justify-content: center;
+			 //background-color: #FFC227;
+			 margin:0 40upx;
+			 .pahoto{
+				 width:40upx;height:40upx;
 				 margin:0 10upx;
-				 .navImg{
-					 width:30upx;height:30upx;
-				 }
-				 view{
-					 font-size: 28upx;
-					 color:#fff;
-				 }
 			 }
-			 .photo-item{
-				height:60upx;
-				 display: flex;
-				 align-items: center;
-				 justify-content: center;
-				 margin:0 10upx;
-				 .pahoto{
-					 width:40upx;height:40upx;
-					 margin:0 10upx;
-				 }
-			 }
-					
 		}
+		
 		.tlak_o {
 			background: #fff;
 			display: flex;

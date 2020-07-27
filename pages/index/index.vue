@@ -1,21 +1,27 @@
 <template>
 	<view class="content" :style="{'height':height-80+'px'}">
 		<template v-if="isShowBaby=='addbaby'">
-			<view class="navBar" :style="{'background':scrollTop>=100?'#FFC227':''}" style="margin-top: 43upx;">
-				<view class="leftNav" @click="left">
-					<image src="../../static/img/backw.png" class="navImg"></image>
-					<view class="name">宝宝</view>
-				</view>
-				<view style="color:#fff;font-size: 26upx;" v-if="scrollTop>=100">
-					{{titleCen}}
-				</view>
-				<view class="photo-item">
-					<image src="../../static/img/icon_sosuo_mian.png" class="pahoto" v-if="scrollTop>=100" ></image>
-					<image src="../../static/img/xiangji.png" class="pahoto" @click="rightShow"></image>
+		<custom  :back="true" leftText="宝宝"
+			class="custom" @click-left="left" color="#fff"
+			:title="titleCen" v-if="scrollTop>=100" :bg="'#FFC227'"
+			:statusBarBackground="'#FFC227'">
+			<view slot="right" >
+				<view class="photo-item" >
+					<image src="../../static/img/icon_sosuo_mian.png" class="pahoto"></image>
+					<image src="../../static/img/xiangji.png" class="pahoto" @click="rightShow" ></image>
 				</view>
 			</view>
-				
+		</custom>
+			<custom  :back="true" leftText="宝宝" 
+				style="position: absolute;top: 0;" @click-left="left" color="#fff"
+				:title="titleCen" v-else>
+				<view slot="right" >
+					<view class="photo-item" :style="{'borderRadius':'50%'}">
+						<image src="../../static/img/xiangji.png" class="pahoto" @click="rightShow" ></image>
+					</view>
+				</view>
 			</custom>
+			
 			<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" 
 			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
 				<!-- :style="{'height':height+'px'}" -->
@@ -221,10 +227,11 @@
 					
 				],
 				height:0,
-				background:([255,194,39]),
+				background:'#FFC227',
 				titleCen:"",
 				scrollTop:0,//页面滚动距离
 				timmer:null,//定时器
+			
 				week:{
 					year:'',
 					month:"",
@@ -274,7 +281,11 @@
 				this.scrollTop=e.detail.scrollTop
 				if(e.detail.scrollTop>100){
 					this.getTime()
-					
+					this.background=([255,194,39])
+				}
+				if(e.detail.scrollTop<30){
+					this.titleCen=''
+					this.background=[]
 				}
 				
 				//this.background="rgba(5,5,155,.5)"
@@ -457,6 +468,37 @@
 
 	.content{
 		 background-color: #F5F5F5;
+		 .custom{
+			 position: fixed;background-color:#FFC227 ;
+			 z-index: 100;
+			 top: calc(100% - 88upx - constant(safe-area-inset-top));
+		 }
+		 .photo-item{
+			height:60upx;
+			 // border-radius: 50%;
+			 display: flex;
+			 align-items: center;
+			 justify-content: center;
+			 background-color: #FFC227;
+			 margin:0 40upx;
+			 .pahoto{
+				 width:40upx;height:40upx;
+				 margin:0 10upx;
+			 }
+		 }
+		 .leftNav{
+			 display: flex;
+			 flex-direction: row;
+			 justify-content: flex-start;
+			 align-items: center;
+			 .navImg{
+				 width:30upx;height:30upx;
+			 }
+			 view{
+				 font-size: 28upx;
+				 color:#fff;
+			 }
+		 }
 		 .scroller{
 			//  position:sticky;
 			// top: var(--window-10);
@@ -547,46 +589,7 @@
 		 }
 		 
 		
-		 .navBar{
-			 display: flex;
-			 justify-content: space-between;
-			align-items: center;
-			 position: fixed;
-			 width: 100%;
-			 padding: 10upx 0;
-			 // background-color: #FFC227;
-			 //margin:20upx 0;
-			
-			 z-index: 1;
-			 .leftNav{
-				 display: flex;
-				 flex-direction: row;
-				 justify-content: flex-start;
-				 align-items: center;
-				  margin:0 40upx;
-				 .navImg{
-					 width:30upx;height:30upx;
-				 }
-				 view{
-					 font-size: 28upx;
-					 color:#fff;
-				 }
-			 }
-			 .photo-item{
-				height:60upx;
-				 border-radius: 50%;
-				 display: flex;
-				 align-items: center;
-				 justify-content: center;
-				 background-color: #FFC227;
-				 margin:0 40upx;
-				 .pahoto{
-					 width:40upx;height:40upx;
-					 margin:0 10upx;
-				 }
-			 }
-			
-		 }
+		 
 		.item{
 			padding:0 20upx;
 			margin:20upx 0;

@@ -1,17 +1,19 @@
 <template>
 	<view style=" margin-top: 73upx;">
 		<!-- 搜索条 -->
-		<view class="searchTopBox">
-			<view class="left" style="width: 30px;height: 100%;display: flex;align-items: center;justify-content: center;" @click="left">
-				<image src="../../../../static/img/backw.png" mode="" style="width: 30upx;height: 30upx;"></image>
+		<custom  :back="true" 
+			 @click-left="left" 
+			 :statusBarBackground="'#fff'" :bg="'#fff'" >
+			<view slot="ceb" style="width: 100%;height:50upx;display: flex;align-items: center;">
+				<view class="input" style="display: flex;height:100%;width:100%;flex-direction: row;justify-content: flex-start;background:#eee;align-items: center;border-radius: 5px;">
+					<image src="../../../../static/img/se.png" style="width:20upx;height: 20upx;margin:0 20upx"></image>
+					<input type="text" placeholder="搜索附近位置" placeholder-style="font-size:22upx;color:#aaa;">
+				</view>
 			</view>
-			<view class="searchBoxRadius">
-				<view class="grace-search-icon searchBoxIcon"></view>
-				<input class="searchBoxIpt" type="search" v-model="ipt" @confirm="searchNow($event)" placeholder="搜索附近位置"></input>
+			<view slot="right">
+				<view class="rightName" style="color:#FFC227;font-size: 26upx;">搜索</view>
 			</view>
-			<view class="name" style="font-size: 32upx;color:#fff;width:100upx;display: flex;justify-content: center;align-items: center;height: 100%;">搜索</view>
-		</view>
-		<!-- 搜索历史 -->
+		</custom>
 		<view class="searchBotBox" v-if="false">
 			<view class="ov">
 				<view class="fl">搜索历史</view>
