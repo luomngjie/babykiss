@@ -1,5 +1,5 @@
 <template>
-	<view class="content" :style="{'height':height-80+'px'}">
+	<view class="content" :style="{'height':height-30+'px','background':isShowBaby=='addbaby'?'':'#fff'}">
 		<template v-if="isShowBaby=='addbaby'">
 		<custom  :back="true" leftText="宝宝"
 			class="custom" @click-left="left" color="#fff"
@@ -97,17 +97,20 @@
 			</view>
 		</template>
 		<template v-else>
-			<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false"></custom>
-			<view class="item" v-for="index in 5" :key="index" @click="detail(index)">
-				<view class="item-left">
-					<image src="../../static/img/babysel.png" class="img"></image>
-					<view class="con">
-						<view class="top">何苦</view>
-						<view class="tips">第九天，共7条记录</view>
+			<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false" :statusBarBackground="'#fff'" :bg="'#fff'"></custom>
+			<scroll-view  :style="{'height':height-100+'px'}"  @scrolltolower="onReachScollBottom"
+			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
+				<view class="item" v-for="index in 15" :key="index" @click="detail(index)" >
+					<view class="item-left">
+						<image src="../../static/img/babysel.png" class="img"></image>
+						<view class="con">
+							<view class="top">何苦</view>
+							<view class="tips">第九天，共7条记录</view>
+						</view>
 					</view>
+					<image src="../../static/img/jiantou.png" class="item-right"></image>
 				</view>
-				<image src="../../static/img/jiantou.png" class="item-right"></image>
-			</view>
+			</scroll-view>
 			<uni-popup type="center" ref="popup" zIndex="999">
 				<view class="popup-center">
 					<view class="item-list">操作</view>

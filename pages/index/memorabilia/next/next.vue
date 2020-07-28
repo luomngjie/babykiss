@@ -31,8 +31,8 @@
 				</view>
 			</view>
 			<view class="line"></view>
-			<view class="vacName">
-				<view class="name">
+			<view class="vacName" @click="see">
+				<view class="name" >
 					<image src="../../../../static/img/time.png" class="image"></image>
 					<text>谁可以看</text>
 				</view>
@@ -109,6 +109,14 @@
 			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
+			/**
+			 * 谁可以看
+			 */
+			see(){
+				uni.navigateTo({
+					url:"/pages/index/memorabilia/next/see"
+				})
+			},
 			/**
 			 * 保存
 			 */

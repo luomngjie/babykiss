@@ -111,6 +111,10 @@
            "style":{"navigationStyle": "custom"}
         }
        
+        ,{//谁可以看
+            "path" : "pages/index/memorabilia/next/see",
+            "style":{"navigationStyle": "custom"}
+        }
     ],
 	
 	"tabBar": {
