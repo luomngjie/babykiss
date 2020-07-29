@@ -4,13 +4,15 @@
 		<custom v-if="type==1 && isCodeLogin" rightText="遇到问题" :back="false"  @click-right="popup"></custom>
 		<view class="login">{{type==0?'注册':'登录'}}</view>
 		<view class="log_input">
+			
 			<view class="tel">
 				<view class="tel_number">
-					<view class="phone">+86</view>
-					<image src="../../static/img/san.png" class="san"></image>
+					<view class="phone">{{!isCodeLogin?"+86":"用户名:"}}</view>
+					<image src="../../static/img/san.png" class="san" v-if="!isCodeLogin"></image>
 				</view>
-				<input maxlength="11" class="number" v-model="userInfo.tel" type="number" value="" placeholder="请输入手机号码" placeholder-style="color:#F3F3F3;font-size:26upx;"/>
-				<image src="../../static/img/cha.png" class="clear" v-if="userInfo.tel.length>0" @tap.stop="clearPhone"></image>
+				<input maxlength="11" v-if="!isCodeLogin" class="number" v-model="userInfo.tel" type="number" value="" placeholder="请输入手机号码" placeholder-style="color:#F3F3F3;font-size:26upx;"/>
+				<input class="number" v-else v-model="userInfo.name" type="text" value="" placeholder="请输入用户名" placeholder-style="color:#F3F3F3;font-size:26upx;"/>
+				<image src="../../static/img/cha.png" class="clear" v-if="!isCodeLogin&&userInfo.tel.length>0" @tap.stop="clearPhone"></image>
 			</view>
 			<view class="tel password" v-if="isCodeLogin">
 				<view class="tel_number">
@@ -20,7 +22,8 @@
 				<image src="../../static/img/cha.png" class="clear" v-if="userInfo.password.length>0" @tap.stop="clearPassword"></image>
 			</view>
 		</view>
-		<view class="sublime" :class="{bggray: userInfo.codeTextShow == 1 || userInfo.tel.length<11}" @tap.stop="login">{{isCodeLogin?'登录':'获验证码'}}</view>
+		<view class="sublime" :class="{bggray: userInfo.codeTextShow == 1 || userInfo.tel.length<11}" @tap.stop="login" v-if="!isCodeLogin">获验证码</view>
+		<view class="sublime" :class="{bggray: userInfo.name==0 || userInfo.password<6}" @tap.stop="login" v-else>登录</view>
 		<view class="around-tip" v-if="type==1">
 			<view class="tips" @tap.stop="codeReg" >{{isCodeLogin?(userInfo.codeTextShow==0?codeText.getCode: userInfo.codeTextShow==1?count + codeText.countDown: codeText.getAgain):'密码登录'}}</view>
 			<view class="tips" @tap.stop="regNewNumber">注册账号</view>
@@ -53,6 +56,7 @@
 				userInfo:{
 					tel:"",
 					password:'',
+					name:"",//用户名
 					codeTextShow:0
 				},
 				codeText: {
@@ -70,6 +74,7 @@
 		
 		onLoad(opt) {
 			this.type=opt.type
+			if(opt.isCodeLogin) this.isCodeLogin = opt.isCodeLogin
 			this.height=this.$store.state.system.screenHeight+200
 		},
 		
@@ -110,11 +115,17 @@
 			 */
 			login(){
 				let valLoginRes
-				let url
 				if(this.isCodeLogin){
+					if(this.userInfo.name.length==0){
+						uni.showToast({
+							title:"请填写用户名",
+							icon:"none"
+						})
+						return 
+					}
 					let loginRules = [
-					  {name: 'tel', required: true, type: 'phone', errmsg: '请输入正确的手机号'},
-					  {name: 'password', type: 'required', errmsg: '请输入密码'},
+					  // {name: 'userName', required: true, type: 'phone', errmsg: '请输入正确的用户名'},
+					  {name: 'password',required: true, type: 'required', errmsg: '请输入密码'},
 					  {name: 'password', type: 'pwd', errmsg: '密码须是6～16位字符'},
 					]
 					valLoginRes = this.$validate.validate(this.userInfo, loginRules)
@@ -133,16 +144,15 @@
 				  })
 				  return false
 				}else{
-					if(this.isCodeLogin){//密码登录
-						url="/user/login"
-						this.send(url)
-					}else{//验证码登录
-						
-						url="/sms/send"
-						this.send(url)
-						//uni.navigateTo({url:"/pages/login/codeLogin"})
+					if(!this.isCodeLogin){//验证码登录/注册账号
+						let obj = {mobile:this.userInfo.tel}
+						this.send("/sms/send",obj)
+					}else if(this.isCodeLogin){
+						//密码登录
+						let obj = {password:this.userInfo.password,account:this.userInfo.name}
+						this.send("/user/login",obj)
 					}
-					//uni.navigateTo({url:"/pages/login/codeLogin"})
+					
 				}
 				
 			},
@@ -150,18 +160,40 @@
 			/**
 			 * 根据状态判断获取验证码或者登录
 			 */
-			send(url){
+			send(url,obj){
 				let self=this
-				this.http({
-					url:url,
-					data:{
-						mobile:self.userInfo.tel
-					},
-					success:res=>{
-						console.log(res)
-					},
-					fail:err=>{
-						console.log(err)
+				this.http(url,obj,'',true).then(res=>{
+					if(res.code==1){
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+						setTimeout(()=>{
+							if(!self.isCodeLogin){
+								//验证码登录
+								if(self.type==1){
+									uni.navigateTo({
+										url:"/pages/login/codeLogin?tel="+this.userInfo.tel+"&pwd="+'code'
+									})
+								}else if(self.type==0){
+									//注册
+									uni.navigateTo({
+										url:"/pages/login/codeLogin?tel="+this.userInfo.tel+"&pwd="+'pwd'
+									})
+								}
+							}else{
+								//密码登录
+								uni.reLaunch({
+									url:"/pages/index/index"
+								})
+							}
+							
+						},1200)
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
 					}
 				})
 			},
@@ -227,6 +259,7 @@
 
 <style lang="scss" scoped>
 	.content{
+		background-color: #fff;
 		position: fixed;
 		.login{
 			display: flex;

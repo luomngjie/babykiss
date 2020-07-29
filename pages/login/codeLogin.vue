@@ -19,14 +19,17 @@
 		data() {
 			return {
 				height:0,
-				phone:"18223138790",
-				count: 10,
+				phone:"",
+				count: 59,
 				timer:null,
-				codeTextShow:0
+				codeTextShow:0,
+				pwd:""//注册账号，跳转密码登录
 			};
 		},
 		
-		onLoad() {
+		onLoad(opt) {
+			this.phone=opt.tel
+			this.pwd=opt.pwd
 			this.height=this.$store.state.system.screenHeight
 			this.getCode()
 		},
@@ -47,6 +50,7 @@
 			   		self.timer = null
 			   	}
 			   }, 1000)
+			   
 		   },
 		   
 			
@@ -54,8 +58,22 @@
 		   重新获取*
 			*/
 		   againCode(){
-			   this.count=10
+			   this.count=59
 			   this.getCode()
+			   this.http("/sms/send",{mobile:this.phone},'',true).then(res=>{
+				if(res.code==1){
+					uni.showToast({
+						title:res.msg,
+						icon:"none"
+					})
+				}else{
+					uni.showToast({
+						title:res.msg,
+						icon:"none"
+					})
+				}
+			   })
+			  
 		   },
 		   
 			
@@ -63,8 +81,49 @@
 			* 验证码输入完成自动触发
 			*/
 		   finish(e){
-			   console.log(13)
-			   uni.switchTab({url:"/pages/index/index"})
+			   if(this.pwd=="pwd"){
+				   this.http("/sms/check",{mobile:this.phone,captcha:e}).then(res=>{
+					   if(res.code==1){
+						   let isCodeLogin=true
+						    //密码登录
+						   uni.reLaunch({
+						   	url:"/pages/login/login?type="+"1"+"&isCodeLogin="+true
+						   })
+					   }else{
+						   uni.showToast({
+								title:res.msg,
+								icon:"none"
+						   })
+					   }
+				   })
+				  
+			   }else if(this.pwd=="code"){
+				    //手机验证码登录
+				   this.http("/user/mobilelogin",{code:e, mobile:this.phone}).then(res=>{
+						 if(res.code==1){
+							 uni.setStorageSync("userInfo",res.data.userinfo)
+							 uni.showToast({
+								title:res.msg,
+								icon:"none",
+								success:res=>{
+									setTimeout(()=>{
+										 uni.switchTab({url:"/pages/index/index"})
+									},1200)
+								}
+							 })
+						 }else{
+							 uni.showToast({
+								title:res.msg,
+								icon:"none"
+							 })
+						 }
+				   				
+				   })
+				   
+				  
+			   }
+			 
+			  
 		   }
 		   
 		}

@@ -1,49 +1,53 @@
 const baseURL = "https://api.diewo.cn/index.php"
 
-const token = uni.getStorageSync("token")
-
-const http = (options) => {
+const token = uni.getStorageSync("token")||''
+const http = (url, data, method = 'POST', isloading = false) => {
 	return new Promise((resolve, reject) => {
-		uni.showLoading({
+		isloading && uni.showLoading({
 			title: '加载中...',
-			mask: options.load || false // 默认遮罩出现可以继续操作
-		});
-		
-		try{
-			
-			uni.request({
-				url:(options.baseURL || baseURL) + options.url,
-				method: options.method || 'POST', // 默认为POST请求
-				data: options.data, //请求超时在manifest.json配置
-				// header:{
-				// 	'token':token,
-				// },
-				success:res=>{
-					resolve(res.data)
-				},
-				fail:err=>{
-					reject(err.data);
-					
-					uni.showToast({
-						title: '请检查网络连接',
-						icon: 'none'
-					})
-					
-					//错误码处理
-					
-					
-				},
-				
-				complete:()=>{
-					uni.hideLoading();
-				}
-			})
-			
-			
-		}catch(e){
-			uni.hideLoading();
-			uni.showToast({title: '服务端异常',icon: 'none'})
+			mask: true
+		})
+		{
+			data = {
+				...data,
+				token:token
+			}
 		}
+		
+		uni.request({
+			url: baseURL + url,
+			data: data,
+			header: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			method: method,
+			success: function(res) {
+				resolve(res.data)
+			},
+			fail: function(e) {
+				reject(e)
+			},
+			complete(res) {
+				uni.hideLoading()
+				if (res.data.code == 0) {
+					uni.showToast({
+						title: res.data.msg,
+						icon: "none",
+						duration: 2000,
+						position: 'bottom',
+						success() {
+							setTimeout(() => {
+								uni.hideToast()
+							}, 2000)
+						}
+					})
+				}
+				if (res.data.code == 401) {
+					uni.removeStorageSync('token')
+					
+				}
+			}
+		})
 	})
 }
 
