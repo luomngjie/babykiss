@@ -1,31 +1,103 @@
 <template>
-	<view class="content" :style="{'height':height-30+'px','background':isShowBaby=='addbaby'?'':'#fff'}">
-		<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false" :statusBarBackground="'#fff'" :bg="'#fff'"></custom>
-		<scroll-view  :style="{'height':height-150+'px'}"  @scrolltolower="onReachScollBottom"
-		 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
-			<view class="item" v-for="(item,index) in babyList" :key="index" @click="detail(item)" >
-				<view class="item-left">
-					<image src="../../static/img/babysel.png" class="img"></image>
-					<view class="con">
-						<view class="top">{{item.name}}</view>
-						<view class="tips">第{{item.day||0}}天，共{{item.baby_log_count}}条记录</view>
+	<view class="content" :style="{'height':height+'px'}">
+			<custom  :back="true" leftText="宝宝"
+				class="custom" @click-left="left" color="#fff"
+				:title="titleCen" v-if="scrollTop>=100" :bg="'#FFC227'"
+				:statusBarBackground="'#FFC227'">
+				<view slot="right" >
+					<view class="photo-item" >
+						<image src="../../static/img/icon_sosuo_mian.png" class="pahoto"></image>
+						<image src="../../static/img/xiangji.png" class="pahoto" @click="rightShow" ></image>
 					</view>
 				</view>
-				<image src="../../static/img/jiantou.png" class="item-right"></image>
+			</custom>
+			<custom  :back="true" leftText="宝宝" 
+				style="position: absolute;top: 0;" @click-left="left" color="#fff"
+				:title="titleCen" v-else>
+				<view slot="right" >
+					<view class="photo-item" :style="{'borderRadius':'50%'}">
+						<image src="../../static/img/xiangji.png" class="pahoto" @click="rightShow" ></image>
+					</view>
+				</view>
+			</custom>
+			
+			<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" 
+			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
+			
+			<view class="background">
+				<view class="logo">
+					<image src="../../static/img/baby.png" class="img" @click="imgpopup"></image>
+					<view class="right" @tap.click="babyInfor">
+						<view class="name">{{param.name}}</view>
+						<view class="name">刚出生<image src="../../static/img/ready.png" class="ready"></image></view>
+					</view>
+				</view>
+				<view class="nav">
+					<view class="nav-item" v-for="(item,idnex) in nav" :key="item.id" @tap.stop="baby(item.id,item.url)">
+						{{item.name}}
+					</view>
+				</view>
 			</view>
-		</scroll-view>
-		<uni-popup type="center" ref="popup" zIndex="999">
-			<view class="popup-center">
-				<view class="item-list">操作</view>
-				<view class="line"/>
-				<view class="item-list" @click="establish">添加宝宝</view>
-				<view class="line"/>
-				<view class="item-list" @tap.stop="closes">取消</view>
+			
+			<view class="tipse" v-if="false">
+				<image src="../../static/img/cao.png" class="img"></image>
+				<view class="tips">和宝妈一起见证宝宝的成长吧</view>
 			</view>
-		</uni-popup>
+			
+			
+			<view class="timeLine" v-if="talks.length==0">
+				<view class="scroll">
+					<view class="item-menu"  @tap.stop="upload">
+						<view class="day">7月12日&nbsp;第1天</view>
+						<view class="conten">
+							<image src="../../static/img/banner.jpg" class="image"></image>
+							<view class="tipsl">有了宝宝的陪伴,每天都是奇妙的体验，从现在开始记录，留住成长的美好.</view>
+							<view class="uploat" >上传照片和视频</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<ysteps :talk="talk" :type="type" v-else></ysteps>
+			
+			<uni-popup type="center" ref="operation" zIndex="999">
+				<view class="popup-center">
+					<view class="item-list">操作</view>
+					<view class="line"/>
+					<view class="item-list" @tap.click="babyInfor">宝宝信息</view>
+					<view class="line"/>
+					<view class="item-list">设置头像</view>
+					<view class="line"/>
+					<view class="item-list">设置封面</view>
+				</view>
+			</uni-popup>
+			
+			</scroll-view>
+			<view class="hide" v-if="isShows" @tap.stop="close" >
+				<view class="top">
+					<view class="time">
+						<view class="day">{{week.day}}</view>
+						<view class="week">
+							<view class="weeks">{{week.week}}</view>
+							<view class="weeks">{{week.month}}/{{week.year}}</view>
+						</view>
+						<view class="numday">出生第14天</view>
+					</view>
+					<image src="../../static/img/banner.jpg" class="bg"></image>
+				</view>
+				<view class="bottomItem" >
+					<view class="items" v-for="(item,index) in bottom" :key="index" :animation="animationData" >
+						<view class="menu" :style="{'background':item.bg}">
+							<image :src="item.img" class="item-img"></image>
+						</view>
+						<view class="name" style="font-size: 22upx;">{{item.name}}</view>
+					</view>
+					
+				</view>
+			</view>
+		<!-- 
 		
 		<uni-load-more :status="status"></uni-load-more>
-		<loading v-model="show"></loading>
+		<loading v-model="show"></loading> -->
 	</view>
 </template>
 
@@ -116,6 +188,7 @@
 					}
 					
 				],
+				talks:[],//宝宝大事记和体重数据
 				nav:[
 					
 					{
@@ -147,7 +220,7 @@
 					day:"",
 					week:""
 				},//年月日
-				babyList:[],//宝宝数组
+				
 				page:{
 					page:1,//当前页数
 					num:5,//当前条数
@@ -155,7 +228,8 @@
 				},
 				show:true,//全局等待动画
 				status: 'more',
-				flage:true
+				param:{},//宝宝详情信息
+				api:"https://api.diewo.cn/index.php"//图片上传
 				
 				
 			}
@@ -164,12 +238,7 @@
 			
 		},
 		onReachBottom() {
-			if(this.isShowBaby!="addbaby"){
-				if(this.status == 'noMore'){
-					return
-				}
-				this.babyLists()
-			}
+			
 			
 		},
 		methods: {
@@ -221,15 +290,6 @@
 				
 			},
 			
-			/**
-			 * 添加宝宝
-			 */
-			establish(){
-				uni.navigateTo({
-					url:"/pages/index/add_baby/add_baby"
-				})
-				this.$refs["popup"].close()
-			},
 			
 			/**
 			 * 取消
@@ -238,15 +298,6 @@
 				this.$refs["popup"].close()
 			},
 			
-			/**
-			 * 宝宝详情
-			 */
-			detail(item){
-				uni.setStorageSync("babyItem",item)
-				uni.navigateTo({
-					url:"/pages/index/baby_detail"
-				})
-			},
 			
 			/**
 			 * @param {Object} 首页头像事件
@@ -280,38 +331,69 @@
 			 * 上传照片和视频
 			 */
 			upload(){
+				let self=this
 				uni.chooseImage({
-				    count: 6, //可以选择图片的张数
-				    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+				    // count: 6, //可以选择图片的张数
 				    sourceType:['album'], //从相册选择  默认是两个都有
 				    success: function (res) {
-				        console.log(JSON.stringify(res.tempFilePaths));
+						//JSON.stringify(res.tempFilePaths)
+						
+				        uni.showLoading({
+				        	title:"图片上传中"
+				        })
+				        uni.uploadFile({
+				        	url:self.api+'/file_upload/upload',
+				        	fileType:'image',
+				        	filePath:res.tempFilePaths[0],
+				        	sizeType: ['compressed'],  
+				        	name:'file',  
+				        	formData:{
+				        		token:uni.getStorageSync('userInfo').token
+				        	},
+				        	success: (uploadFileRes) => {
+				        		let obj = JSON.parse(uploadFileRes.data);
+				        		if(obj.code==1){
+									uni.setStorageSync("img",obj.data.str_url)
+				        			uni.navigateTo({
+				        				url:"/pages/index/memorabilia/next/next"
+				        			})
+				        			
+				        		}
+				        		
+				        	},
+				        	fail:(error)=>{
+				        		uni.showToast({
+				        			title:"图片上传失败",
+				        			icon:"none"
+				        		})
+				        	}
+				        })
+				        uni.hideLoading({
+				        	title:"图片上完毕"
+				        })
 						//返回结果
 				    }
 				})
 			},
 			
 			/**
-			 * @param {Object} opt
-			 * 滚动底部事件，无无限加载
+			 * 宝宝的大事记和体重记录列表
 			 */
-			onReachScollBottom(e){
-				if(this.isShowBaby!="addbaby"){
-					if(this.flage) this.babyLists()
+			appBabyLogList(){
+				this.http("/app_baby/appBabyLogList",{baby_id:this.param.id}).then(res=>{
+					if(res.code==1){
+						this.talks = res.data.data
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
 					
-				}
-				
-				
+				})
 			},
 			
-			/**
-			 * 下拉刷新
-			 */
-			refresh(){
-				if(this.isShowBaby!="addbaby"){
-					if(this.flage) this.babyLists()
-				}
-			},
+			
 			
 			/**
 			 * @param {Object} opt右侧相机点击事件
@@ -364,53 +446,20 @@
 				})
 				this.$refs["operation"].close()
 			},
-			babyLists(){
-				this.status = 'loading'
-				// uni.showLoading({
-				// 	title:"加载中..."
-				// })
-				this.http("/app_baby/babyList",{
-					page:this.page.page,
-					num:this.page.num
-				}).then(res=>{
-					if(res.code==1){
-						
-						this.show = false
-						this.page.page++
-						this.status="more"
-						//this.babyList=res.data.data
-						this.page.total = res.data.total
-						this.babyList=this.babyList.concat(res.data.data)
-						// if(this.babyList.length<res.data.data.length){
-						// 	this.status = 'more'
-						// 	return
-						// }else{this.status = 'noMore'
-							
-						// }
-						if(this.babyList.length==res.data.total){
-							this.status = 'noMore'
-							this.flage = false
-						}else{
-							this.flage = true
-						}
-						//uni.hideLoading()
-					}else{
-						uni.showToast({
-							title:res.msg,
-							icon:"none"
-						})
-					}
-					
-				})
-			}
+			
+		},
+		/**
+		 * @param {Object} opt
+		 * 滚动底部事件，无无限加载
+		 */
+		onReachScollBottom(e){
+			
 		},
 		onLoad(opt) {
+			this.param = uni.getStorageSync("babyItem")
 			this.height=this.$store.state.system.screenHeight
-			uni.startPullDownRefresh();
-			this.isShowBaby=opt.type||''
-			//this.babyLists()
-			
-				
+			this.appBabyLogList()
+			//console.log(this)
 		},
 		
 		onUnload() {
@@ -508,6 +557,7 @@
 					 .day{
 						 font-size: 50upx;
 						 margin-right: 13upx;
+						 color:#aaa;
 						 
 					 }
 					 .week{
@@ -571,47 +621,6 @@
 		  
 		   100% {transform: translateY(0px);opacity: 1}
 		 }
-		 
-		
-		 
-		.item{
-			padding:0 20upx;
-			margin:20upx 0;
-			align-items: center;
-			display: flex;
-			height:110upx;
-			justify-content: space-between;
-			position:relative;
-			&::after{
-				content: '';
-				border-bottom: 1upx solid #eee;
-				width:80%;
-				position: absolute;
-				width: 80%;
-				position: absolute;
-				bottom: 0;
-				right: 40upx;
-			}
-			.item-left{
-				width:500upx;
-				.img{
-					width:80upx;height: 80upx;
-				}
-				display: flex;
-				align-items: center;
-				justify-content: flex-start;
-				.con{
-					margin-left:20upx;
-					font-size: 26upx;
-					.tips{
-						color:#D3D3D3;margin-top:5upx;
-					}
-				}
-			}
-			.item-right{
-				width:40upx;height:40upx
-			}
-		}
 		.background{
 			height:400upx;
 			background-image: url("../../static/img/banner.jpg");
@@ -699,6 +708,7 @@
 			.item-menu{
 				.day{
 					font-size: 32upx;
+					 color:black;
 				}
 				.conten{
 					padding: 20upx;

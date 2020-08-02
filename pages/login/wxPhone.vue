@@ -8,10 +8,10 @@
 				<view class="phone">+86</view>
 				<image src="../../static/img/san.png" class="san"></image>
 			</view>
-			<input maxlength="11" class="number" v-model="userInfo.tel" type="number" value="" placeholder="输入手机号码" placeholder-style="color:#F3F3F3;font-size:26upx;"/>
-			<image src="../../static/img/cha.png" class="clear" v-if="userInfo.tel.length>0" @tap.stop="clearPhone"></image>
+			<input maxlength="11" class="number" v-model="userInfo.mobile" type="number" value="" placeholder="输入手机号码" placeholder-style="color:#F3F3F3;font-size:26upx;"/>
+			<image src="../../static/img/cha.png" class="clear" v-if="userInfo.mobile.length>0" @tap.stop="clearPhone"></image>
 		</view>
-		<view class="next" @click="next">
+		<view class="next" @click="next" >
 			下一步
 		</view>
 	</view>
@@ -27,7 +27,7 @@
 			return {
 				height:0,
 				userInfo:{
-					tel:"18223138790"
+					mobile:""
 				},
 			};
 		},
@@ -36,20 +36,43 @@
 		    * 清除手机号
 		    */
 		   clearPhone(){
-		   	this.userInfo.tel = ''
+		   	this.userInfo.mobile = ''
 		   },
 		   
 		   /**
 			* 下一步
 			*/
-		   next(){
-			   uni.navigateTo({
-			   	url:"/pages/login/wxTel"
-			   })
+		   next(){ 
+			   if(this.userInfo.mobile.length<12&&this.userInfo.mobile.length==0){
+				   uni.showToast({
+				   	title:'请正确输入手机号',
+					icon:"none"
+				   })
+				   return
+			   }else{
+				   this.http("/sms/send",{mobile:this.userInfo.mobile}).then(res=>{
+					   let json = JSON.stringify(this.userInfo)
+					   if(res.code==1){
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
+							})
+							setTimeout(()=>{
+								uni.navigateTo({
+									url:"/pages/login/codeLogin?pwd="+"qq"+"&parame="+json
+								})
+							},1200)
+					   }
+				   })
+			   }
+				
 		   }
 		  
 		},
-		onLoad() {
+		onLoad(opt) {
+			this.userInfo.openid = opt.openid
+			this.userInfo.nickname = opt.nickname
+			this.userInfo.avatar = opt.avatar
 			this.height=this.$store.state.system.screenHeight
 		}
 	}
@@ -92,13 +115,15 @@
 			}
 		}
 		.number{
-			flex: 1;margin-left:20upx;
+			flex: 1;margin-left:20upx;color:#aaa;
 		}
 		.clear{
 			width:30upx;height:30upx;
 		}
 	}
-	
+	.false{
+		background: #aaa;
+	}
 	.next{
 		width:600upx;
 		margin:0 auto;

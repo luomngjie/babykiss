@@ -23,19 +23,19 @@
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
 							<scroll-view class="swiper-one-list" scroll-y="true" :style="{'height':height-105+'px'}" @scrolltolower="onReachScollBottom">
 								<view class="swiper-list-entity" >
-									<view class="menu-item" v-for="index in 15" @click="detail(index)">
+									<view class="menu-item" v-for="(item,index) in babyWeightList" @click="detail(item)">
 										<view class="tips">
 											<view class="top">
-												<text class="day">2020-07-22</text>
-												<text class="time">第11天</text>
+												<text class="day">{{item.time}}</text>
+												<text class="time">{{item.day_diff}}</text>
 											</view>
 											<view class="miao">宝宝长得又高又壮哦</view>
 										</view>
 										<view class="line"></view>
 										<view class="menu">
-											<view class="list">身高<text style="margin-left:10upx;color:#E1CA56;">160cms</text></view>
-											<view class="list" style="text-align: right;">体重<text style="margin-left:10upx;color:#E1CA56;">65kg</text></view>
-											<view class="list">头围<text style="margin-left:10upx;color:#4CD964;">32cm</text></view>
+											<view class="list">身高<text style="margin-left:10upx;color:#E1CA56;">{{item.height}}cm</text></view>
+											<view class="list" style="text-align: right;">体重<text style="margin-left:10upx;color:#E1CA56;">{{item.weight}}kg</text></view>
+											<view class="list">头围<text style="margin-left:10upx;color:#4CD964;">{{item.head_width}}cm</text></view>
 										</view>
 									</view>
 									
@@ -99,7 +99,7 @@
 				</cu-modal>
 		</view>
 		
-		
+		<uni-load-more :status="status"></uni-load-more>
 	</view>
 </template>
 
@@ -112,6 +112,15 @@
 				currentTab: 0,
 				swiper:0,
 				height:0,
+				deletedItem:null,
+				status: 'more',
+				flage:true,
+				page:{
+					page:1,//当前页数
+					num:5,//当前条数
+					total:''//数据总数
+				},
+				babyWeightList:[],//宝宝生长记录列表
 				menuTabs: [{
 					name: '记录列表'
 				}, {
@@ -124,14 +133,49 @@
 				//swiperDateList: [[],[],[],[]]
 			};
 		},
+		onReachBottom() {
+			if(this.isShowBaby!="addbaby"){
+				if(this.status == 'noMore'){
+					return
+				}
+				this.selectWeightStatistics()
+			}
+			
+		},
 		onLoad() {
 			this.height=this.$store.state.system.screenHeight
+			this.selectWeightStatistics()
 			//初始化数据
 			// for (var i = 0; i < this.swiperDateList.length; i++) {
 			// 	this.getDateList(i);
 			// }
 		},
 		methods:{
+			/**
+			 * 身高体重头围
+			 */
+			selectWeightStatistics(){
+				this.status = 'loading'
+				this.http("/app_baby/babyWeightList",{baby_id:uni.getStorageSync("babyItem").id,num:this.page.num,page:this.page.page}).then(res=>{
+					if(res.code==1){
+						this.page.page++
+						this.page.total = res.data.total
+						this.status="more"
+						this.babyWeightList = this.babyWeightList.concat(res.data.data)
+						if(this.babyWeightList.length==res.data.total){
+							this.flage = false
+							this.status = 'noMore'
+						}else{
+							this.flage = true
+						}
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+				})
+			},
 			/**
 			 * 添加
 			 */
@@ -165,52 +209,53 @@
 					let winWidth = uni.getSystemInfoSync().windowWidth;
 					this.scrollLeft = leftWidthSum > winWidth ? (leftWidthSum - winWidth) : 0
 				},
-				getWidth: function(id) { //得到元素的宽高
-					return new Promise((res, rej) => {
-						uni.createSelectorQuery().select("#" + id).fields({
-							size: true,
-							scrollOffset: true
-						}, (data) => {
-							res(data);
-						}).exec();
-					})
-				},
+			getWidth: function(id) { //得到元素的宽高
+				return new Promise((res, rej) => {
+					uni.createSelectorQuery().select("#" + id).fields({
+						size: true,
+						scrollOffset: true
+					}, (data) => {
+						res(data);
+					}).exec();
+				})
+			},
 				
-				/**
-				 * @param {Object} opt
-				 * 滚动底部事件，无无限加载
-				 */
-				onReachScollBottom(){
-					uni.showToast({
-						title:"到底了",
-						icon:"none"
-					})
-				},
+			/**
+			 * @param {Object} opt
+			 * 滚动底部事件，无无限加载
+			 */
+			onReachScollBottom(){
+				if(this.flage) this.selectWeightStatistics()
+				
+			},
 				
 				/*
 				*列表详情
 				 */
-				detail(index){
+				detail(item){
+					this.deletedItem = item
 					this.$refs["popup"].open()
 				},
 				
 				/**
 				 * 修改
 				 */
-				modify(){
+				modify(item){
 					this.$refs["popup"].close()
+					uni.setStorageSync("deletedItem",this.deletedItem)
 					uni.navigateTo({
-						url:"/pages/index/growth_record/add"
+						url:"/pages/index/growth_record/add?type="+"upload"
 					})
 				},
 				
 				/**
 				 * 删除
 				 */
-				deleted(index){
+				deleted(){
 					// uni.showModal({
 					// 	title: '提示',
 					// })
+					
 					this.$refs["popup"].close()
 					this.$refs.quanxian.open()
 				},
@@ -226,6 +271,7 @@
 				 * modal取消按钮
 				 */
 				modalHide(){
+					
 					this.$refs.quanxian.close()
 				},
 				
@@ -233,6 +279,7 @@
 				 * modal确定按钮
 				 */
 				modalConfirm(){
+					console.log(this.deletedItem)
 					this.$refs.quanxian.close()
 				}
 				

@@ -96,14 +96,48 @@
 		},
 		onLoad() {
 			this.height=this.$store.state.system.screenHeight
+			this.listMemorabiliaOne()
+			this.listMemorabiliaBabyTag()
 		},
 		methods:{
+			/**
+			 * 大事记列表
+			 */
+			listMemorabiliaOne(){
+				this.http("/app_baby/listMemorabiliaOne",{baby_id:uni.getStorageSync("babyItem").id}).then(res=>{
+					if(res.code==1){
+						//console.log(res)
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+					
+				})
+			},
+			/**
+			 * 大事记列表顶部标签
+			 */
+			listMemorabiliaBabyTag(){
+				this.http("/app_baby/listMemorabiliaBabyTag",{baby_id:uni.getStorageSync("babyItem").id}).then(res=>{
+					if(res.code==1){
+						console.log(res)
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+					
+				})
+			},
 			/**
 			 * 添加大事记
 			 */
 			add(){
 				uni.navigateTo({
-					url:"/pages/index/memorabilia/add/add"
+					url:"/pages/index/memorabilia/add/add?custom="+ 1
 				})
 			},
 			

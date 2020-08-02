@@ -13,8 +13,8 @@
 					日期
 				</view>
 				<view class="picker">
-					<picker mode="date" :value="parame.date" :start="startDate" :end="endDate" @change="bindDateChange" fields="day">
-						<view class="">{{parame.date}}</view>
+					<picker mode="date" :value="parame.time" :start="startDate" :end="endDate" @change="bindDateChange" fields="day">
+						<view class="">{{parame.time}}</view>
 					</picker>
 				</view>
 			</view>
@@ -33,32 +33,56 @@
 				startDate:"2020/07/26",
 				endDate:'2020/07/30',
 				parame:{
-					date: currentDate
+					time: currentDate
 				},
+				items:null,//修改信息
+				flag:true,
 				list:[
 					{
 						name:"身高",
 						com:"cm",
 						placeholder:"请输入身高",
 						type:"text",
-						value:''
+						value:'',
+						res:"height"
 					},
 					{
 						name:"体重",
 						com:"kg",
 						placeholder:"请输入体重",
 						type:"number",
-						value:''
+						value:'',
+						res:"weight"
 					},
 					{
 						name:"头围",
 						com:"cm",
 						placeholder:"请输入头围",
 						type:"number",
-						value:''
+						value:'',
+						res:"head_width"
 					}
 				]
 			};
+		},
+		onLoad(opt) {
+			if(opt.type=="upload"){
+				if(uni.getStorageSync("deletedItem")){
+					this.items = uni.getStorageSync("deletedItem")
+					this.list.forEach((item,index)=>{
+						if(item.res=="head_width"){
+							item["value"] = this.items.head_width
+						}else if(item.res=="weight"){
+							item["value"] = this.items.weight
+						}else if(item.res=="height"){
+							item["value"] = this.items.height
+						}
+					})
+					if(this.items.time) this.parame.time = this.items.time
+					
+				}
+			}
+			//console.log(this.item)
 		},
 		methods:{
 			/**
@@ -72,11 +96,33 @@
 							title:"请输入宝宝的身高、体重或者头围信息",
 							icon:"none"
 						})
+						this.flag = false
 						return 
+					}else{
+						this.flag = true
 					}
-					this.parame[item.name]=item.value
+					this.parame[item.res]=item.value
 				})
-				console.log(this.parame)
+				this.parame.baby_id=uni.getStorageSync("babyItem").id
+				if(!this.flag) return
+				uni.showLoading({
+					title:"处理中..."
+				})
+				this.http("/app_baby/addWeight",this.parame).then(res=>{
+					if(res.code==1){
+						uni.redirectTo({
+							url:"/pages/index/growth_record/growth_record"
+						})
+					}else{
+						uni.showToast({
+							title:res.msg,
+							con:"none"
+						})
+					}
+					uni.hideLoading()
+					console.log(res)
+				})
+				
 			},
 			
 			/**
@@ -91,7 +137,7 @@
 			日期选择*
 			 */
 			bindDateChange(e){
-				this.parame.date = e.target.value
+				this.parame.time = e.target.value
 			},
 			
 			getDate(type) {

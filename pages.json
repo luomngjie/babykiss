@@ -115,6 +115,18 @@
             "path" : "pages/index/memorabilia/next/see",
             "style":{"navigationStyle": "custom"}
         }
+        ,{//宝宝信息
+            "path" : "pages/index/baby_infor/baby_information",
+            "style":{"navigationStyle": "custom"}
+        }
+        ,{//宝宝详情
+            "path" : "pages/index/baby_detail",
+           "style":{"navigationStyle": "custom"}
+        }
+        ,{//宝宝信息修改
+            "path" : "pages/index/baby_infor/change",
+            "style":{"navigationStyle": "custom"}
+        }
     ],
 	
 	"tabBar": {
@@ -157,7 +169,7 @@
 		"list": [
 			{
 				"name": "", //模式名称
-				"path": "pages/index/index", //启动页面，必选
+				"path": "", //启动页面，必选
 				"query": "" //启动参数，在页面的onLoad函数里面得到
 			}
 		]

@@ -3,7 +3,7 @@
 		<custom :back="false" rightText="保存" leftText="取消" @click-right="save" @click-left="cancal"></custom>
 		
 		<view class="contenttext">
-			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.desc" placeholder-style="font-size:26upx; "/>
+			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.describe" placeholder-style="font-size:26upx; "/>
 			<view class="imagelist">
 				<view class="uni-upload-img uni-flex uni-row" >
 					<view class="flex-item preview_img" v-for="(image,index) in imageList" :key="index" v-if="imageList.length>0">
@@ -21,14 +21,31 @@
 		
 		<view class="lists">
 			<view class="nav">
-				<view class="list" v-for="(item,index) in tips" :key="index" @click="tipsFun(item)">
-					<text>{{item.name}}</text>
-					<image src="../../../../static/img/cheng.png" class="img"></image>
+				<view class="list" v-if="tags" v-model="tags">
+					<text @click="tipsFun(2)">{{tags.tag}}</text>
+					<image src="../../../../static/img/cheng.png" class="img" @click="remove(2)"></image>
 				</view>
-				<view class="list"  @click="tipsFun(item)">
+				<view class="list" v-else>
+					<image src="../../../../static/img/jia.png" class="img" ></image>
+					<text @click="tipsFun(1)">第一次</text>
+				</view>
+				
+				
+				<view class="list" v-for="(item,index) in tips" :key="index"  v-if="tips.length>0" v-model="tips">
+					<text @click="tipsClick(item,index)">{{item.tag}}</text>
+					<image src="../../../../static/img/cheng.png" class="img" @click="removes(item)"></image>
+				</view>
+				<view class="list"  v-else>
+					<image src="../../../../static/img/jia.png" class="img" @click="tipsFun(item)"></image>
+					<text>{{item.tag}}</text>
+					
+				</view>
+				
+				<view class="list" v-if="tips.length<1">
 					<image src="../../../../static/img/jia.png" class="img"></image>
-					<text>标签</text>
+					<text @click="tipsFun(0)">标签</text>
 				</view>
+				
 			</view>
 			<view class="line"></view>
 			<view class="vacName" @click="see">
@@ -48,7 +65,7 @@
 					<text>所在位置</text>
 				</view>
 				<view class="state">
-					<text>重庆</text>
+					<text>{{parame.position_name}}</text>
 					<image src="../../../../static/img/jiantou.png" class="image"></image>
 				</view>
 			</view>
@@ -78,13 +95,19 @@
 			 })
 			
 			return {
-				parame:{
+				parame:{//大事记上传参数
 					date: currentDate,
-					desc:''
+					describe:'',
+					position_name:"重庆",
+					longitude:"106.55",
+					latitude:"29.57",
+					tag:[]
 				},
+				tags:null,
 				startDate:"",
 				endDate:'',
-				imageList: [],
+				imageList: [],//上传图片
+				
 				sourceTypeIndex: 2,
 				sourceType: ['拍照', '相册', '拍照或相册'],
 				sizeTypeIndex: 2,
@@ -92,23 +115,41 @@
 				countIndex: 8,
 				count: [1, 2, 3, 4, 5, 6, 7, 8, 9],
 				imgAllUrl:[],
-				tips:[
-					{
-						name:"第一次啊"
-					},
-					{
-						name:"第一次敢撒谎啊"
-					},
-					{
-						name:"第一次敢撒谎啊"
-					},
-				]
+				
+				imagesList:[],
+				imagesAll:[],
+				
+				apis:"https://api.diewo.cn/",//图片上传
+				
+				tips:[]
 			};
 		},
-		onLoad() {
+		onLoad(opt) {
+			
+			if(uni.getStorageSync("tag")){
+				this.tags=uni.getStorageSync("tag")
+				let arr = []
+				arr.push(this.tags)
+				this.parame.tag=JSON.stringify(arr)
+			}
+			
+			if(uni.getStorageSync("tags")){
+				this.tips=uni.getStorageSync("tags")
+				this.taglist = this.tips
+			}
+			this.imageList.push(this.apis+uni.getStorageSync('img'))
+			this.imagesList.push(uni.getStorageSync('img'))
 			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
+			/**
+			 *自定义标签点击回显
+			 */
+			tipsClick(item,index){
+				uni.navigateTo({
+					url:"/pages/index/memorabilia/add/add?tags="+JSON.stringify(item)
+				})
+			},
 			/**
 			 * 谁可以看
 			 */
@@ -121,15 +162,56 @@
 			 * 保存
 			 */
 			save(){
-				uni.navigateTo({
-					url:"/pages/index/memorabilia/memorabilia"
+				
+				let tags = uni.getStorageSync("tags")
+				
+				let imgs=[],obj={}
+				this.parame.baby_id = uni.getStorageSync("babyItem").id
+				this.imagesList.forEach(item=>{
+					obj.file=item
+					
 				})
+				imgs.push(obj)
+				this.parame.file = JSON.stringify(imgs)
+				console.log(this.parame)
+				if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
+					this.http("/app_baby/addMemorabilia",this.parame).then(res=>{
+						if(res.code==1){
+							console.log(res)
+							// uni.redirectTo({
+							// 	url:"/pages/index/baby_detail"
+							// })
+						}
+						
+					})
+				}else{
+					uni.showToast({
+						title:"请填写完整信息",
+						icon:"none"
+					})
+				}
+				
 			},
 			/**
 			 * 取消
 			 */
 			cancal(){
-				uni.navigateBack()
+				if(this.imageList.length>0){
+					uni.showModal({
+						title:"提示",
+						content:"宝宝新动态还未发送，是否需要放弃?",
+						mask:true,
+						success:res=>{
+							if (res.confirm) {
+								uni.redirectTo({
+									url:"/pages/index/baby_detail"
+								})
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					})
+				}
 			},
 			
 			/**
@@ -137,36 +219,43 @@
 			 */
 			descInput(e){
 				let value = e.detail.value
-				this.parame.desc=value
-				console.log(this.parame)
+				this.parame.describe=value
+				
 			},
 			
 			addPic(imgAll){
 				this.imgAllUrl = [];
-				let url = "路径";
+				this.imagesAll=[];
+				let url = "https://api.diewo.cn/index.php";
 				var that = this;
 				uni.chooseImage({
 					sourceType: ['album', 'camera'],
 					count: this.imageList.length + this.count[this.countIndex] > 9 ? 9 - this.imageList.length :this.count[this.countIndex],
 					success: (res) => {
 						this.imageList = this.imageList.concat(res.tempFilePaths);
+						
 						var imageData = this.imageList
 						const tempFilePaths = res.tempFilePaths;
-						//上传个数循环拿到每一个照片的路径，然后放到一个数组中
-						for(var i=0;i<imageData.length;i++){
-							//图片上传
-							const uploadTask = uni.uploadFile({
-								url:url,
-								filePath:tempFilePaths[0],
-								name:"pic_name",
-								success:function(data){
-									const back = JSON.parse(data.data);
-									var imgUrl = back.data[0].repair_pic_url;
-									//将图片路径赋值给imgAllUrl
-									that.imgAllUrl.push(imgUrl)
-								}
-							})
-						}
+						uni.uploadFile({
+							url:url+'/file_upload/upload',
+							fileType:'image',
+							filePath:res.tempFilePaths[0],
+							sizeType: ['compressed'],  
+							name:"file",
+							formData:{
+								token:uni.getStorageSync('userInfo').token
+							},
+							success:function(data){
+								const back = JSON.parse(data.data);
+								var imgUrl = back.data.str_url;
+								that.imagesList = that.imagesList.concat(imgUrl);
+								//将图片路径赋值给imgAllUrl
+								that.imgAllUrl.push(imgUrl)
+								that.imagesAll.push(imgUrl)
+								
+							}
+						})
+						
 					  },
 				})
 			},
@@ -178,6 +267,10 @@
 					urls: this.imageList
 				})
 			},
+			/**
+			 * @param {Object} index
+			 * @param {Object} e 删除图片
+			 */
 			delect(index,e){
 				var that = this;
 				uni.showModal({
@@ -195,10 +288,14 @@
 								}
 							}
 							var forImg = that.imgAllUrl[index];
+							var fao = that.imagesAll[index];
 							var imageUrl = that.imageList.splice(forImg, 1)
+							var imagesUrl = that.imagesList.splice(fao, 1)
 							removeByValue(that.imageList, imageUrl);
+							removeByValue(that.imagesList, imagesUrl);
 							//重新赋值
 							that.imgAllUrl = that.imageList
+							that.imagesAll = that.imagesList
 						} 
 					}
 				});
@@ -208,9 +305,56 @@
 			 * tips点击事件
 			 */
 			tipsFun(item){
-				uni.navigateTo({
-					url:"/pages/index/memorabilia/add/add"
-				})
+				if(item==2){
+					uni.navigateTo({
+						url:"/pages/index/memorabilia/add/add?tags="+JSON.stringify(this.tags)
+					})
+				}else{
+					this.parame.tag=item
+					uni.navigateTo({
+						url:"/pages/index/memorabilia/add/add?custom="+item
+					})
+				}
+				
+			},
+			
+			/**
+			 * {Object} 移除标签(自定义标签)
+			 */
+			removes(data){
+				let tags = uni.getStorageSync("tags")
+				
+				for(var i=0; i<this.taglist.length; i++) {
+					if(this.taglist[i].id == data.id) {
+						this.taglist.splice(i, 1);
+						this.tips = this.taglist
+						this.$store.commit("baby",this.tips[0])
+						this.parame.tag.push(this.tips[0])
+						if(this.tips.length==0){
+							uni.removeStorageSync("tags")	
+						}
+						break;
+					}else{
+						console.log('一处')
+						this.tips = ''
+						uni.removeStorageSync("tags")	
+					}
+				}
+				// if(tags){
+				// 	tags.forEach(item=>{
+				// 		this.parame.tag.push(item)
+				// 	})
+				// }
+				
+				
+			},
+			
+			/**
+			 * @param {Object} 移除标签(第一次)
+			 */
+			remove(){
+				this.tags=null
+				uni.removeStorageSync("tag")
 			},
 			
 			/*
@@ -236,7 +380,7 @@
 				day = day > 9 ? day : '0' + day;
 				this.startDate = `${year}年${month}月${day}日`;
 				//return `${year}-${month}-${day}`;
-				return `${year}-${month}-${day}-`;
+				return `${year}-${month}-${day}`;
 			},
 			
 			/**
@@ -377,7 +521,7 @@
 				
 				.list{
 					padding:10upx 20upx;height:30upx;
-					background-color: #aaa;
+					background-color: #eee;
 					font-size: 26upx;
 					border-radius: 30upx;
 					margin: 10upx 20upx;

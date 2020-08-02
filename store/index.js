@@ -6,7 +6,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 	state: {
 		number:1,
-		system:{}
+		system:{},
+		baby:[]
 	},
 	getters: {
 	},
@@ -18,6 +19,10 @@ const store = new Vuex.Store({
 		 */
 		getSystem(state,data){
 			state.system=data
+		},
+		baby(state,data){
+			state.baby.push(data)
+			uni.setStorageSync("tags",state.baby)
 		},
 	}
 })

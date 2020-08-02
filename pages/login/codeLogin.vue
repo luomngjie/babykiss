@@ -23,7 +23,8 @@
 				count: 59,
 				timer:null,
 				codeTextShow:0,
-				pwd:""//注册账号，跳转密码登录
+				pwd:"",//注册账号，跳转密码登录
+				wchart:{}//微信登录传的参数
 			};
 		},
 		
@@ -31,6 +32,7 @@
 			this.phone=opt.tel
 			this.pwd=opt.pwd
 			this.height=this.$store.state.system.screenHeight
+			this.wchart=JSON.parse(opt.parame)
 			this.getCode()
 		},
 		methods:{
@@ -86,9 +88,15 @@
 					   if(res.code==1){
 						   let isCodeLogin=true
 						    //密码登录
-						   uni.reLaunch({
-						   	url:"/pages/login/login?type="+"1"+"&isCodeLogin="+true
-						   })
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
+							})
+							setTimeout(()=>{
+								uni.reLaunch({
+									url:"/pages/index/index"
+								})
+							},1200)
 					   }else{
 						   uni.showToast({
 								title:res.msg,
@@ -120,6 +128,13 @@
 				   				
 				   })
 				   
+				  
+			   }else if(this.pwd=="qq"){
+				   this.wchart.code = e
+				   console.log(this.wchart)
+				   this.http("/user/bind_mobile",this.wchart).then(res=>{
+					   console.log(res)
+				   })
 				  
 			   }
 			 

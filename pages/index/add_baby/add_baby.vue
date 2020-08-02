@@ -19,11 +19,11 @@
 			return {
 				height:0,
 				typeList:[
-					{
-						name:"备孕中",
-						url:"../../../static/img/babysel.png",
-						type:0
-					},
+					// {
+					// 	name:"备孕中",
+					// 	url:"../../../static/img/babysel.png",
+					// 	type:0
+					// },
 					{
 						name:"已怀孕",
 						url:"../../../static/img/babysel.png",
@@ -51,7 +51,6 @@
 		},
 		onLoad() {
 			this.height=this.$store.state.system.windowHeight
-			console.log(this.height)
 		}
 	}
 </script>

@@ -24,6 +24,9 @@ Vue.component('cu-modal',modal)
 import uniIcons from "@/components/uni-icons/uni-icons.vue"
 Vue.component('uniIcons',uniIcons)
 
+import uniLoadMore from './components/uni-load-more/uni-load-more.vue'
+Vue.component('uniLoadMore',uniLoadMore)
+
 App.mpType = 'app'
 
 const app = new Vue({

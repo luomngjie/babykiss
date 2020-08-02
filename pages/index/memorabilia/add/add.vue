@@ -9,12 +9,12 @@
 				<text  class="shar_time">第一次</text>
 			</view>
 			<view class="input">
-				<input type="text" placeholder="请输入" placeholder-style="font-size:22upx;color:#aaa" v-model="parame.value">
+				<input type="text" placeholder="请输入" placeholder-style="font-size:22upx;color:#aaa" v-model="tag.tag" @input="input">
 			</view>
 		</view>
 		
 		<view class="nav">
-			<view class="list" v-for="(item,index) in tips" :key="index" @click="tipsFun(item)">{{item.name}}</view>
+			<view class="list" v-for="(item,index) in tips" :key="index" @click="tipsFun(item)">{{item.tag}}</view>
 		</view>
 	</view>
 </template>
@@ -27,63 +27,63 @@
 				check:'0',
 				height:0,
 				select:true,
-				parame:{
-					value:""
+				tag:{
+					tag:"",
+					is_one:"",//1是第一次标签0不是第一次
+					id:""
 				},
-				tips:[
-					{
-						name:"路径",
-						id:0
-					},
-					{
-						name:"叫爸爸",
-						id:1
-					},
-					{
-						name:"好嗨哟",
-						id:2
-					},
-					{
-						name:"脐带掉落看见",
-						id:2
-					},
-					{
-						name:"3",
-						id:2
-					},
-					{
-						name:"叫妈妈",
-						id:2
-					},
-					{
-						name:"坐车",
-						id:2
-					},
-					{
-						name:"吃药",
-						id:2
-					},
-					{
-						name:"洗澡",
-						id:2
-					},
-					{
-						name:"笑",
-						id:2
-					},
-				]
+				custom:'',
+				tips:[],
+				tags:[]
 			};
 		},
-		onLoad() {
+		onLoad(opt) {
+			this.custom = opt.custom
+			if(opt.custom!=1){
+				this.select = false
+			}
+			
+			this.select?this.tag.is_one=1:this.tag.is_one=0
 			this.height=this.$store.state.system.screenHeight
+			this.tagListOne()
+			if(opt.tags){
+				this.ta = JSON.parse(opt.tags)
+				this.tag.is_one=this.ta.is_one
+				this.ta.is_one==1?this.select=true:this.select=false
+				this.tag.tag = this.ta.tag
+				this.tag.id=this.ta.id
+				
+			}
 		},
 		methods:{
+			/**
+			 * 表单输入事件
+			 */
+			input(e){
+				this.tag.id=0
+			},
 			/**
 			 * 下一步
 			 */
 			next(){
+				if(this.tag.tag==''){
+					uni.showToast({
+						title:"请选择标签",
+						icon:"none"
+					})
+					return
+				}
 				uni.navigateTo({
-					url:"/pages/index/memorabilia/next/next"
+					url:"/pages/index/memorabilia/next/next",
+					success:()=>{
+						if(this.custom==1){
+							uni.setStorageSync("tag",this.tag)
+						}else{
+							this.$store.commit("baby",this.tag||'')
+							//uni.setStorageSync("tags",this.tag)
+						}
+						
+					}
 				})
 			},
 			
@@ -98,7 +98,10 @@
 			 * tips点击事件
 			 */
 			tipsFun(item){
-				this.parame.value=item.name
+				//this.tag=item
+				this.tag.id=item.id
+				this.tag.is_one=item.is_one
+				this.tag.tag = item.tag
 			},
 			
 			/**
@@ -106,6 +109,24 @@
 			 */
 			selectShow(){
 				this.select=!this.select
+				this.select?this.tag.is_one=1:this.tag.is_one=0
+			},
+			
+			/**
+			 * 标签回显
+			 */
+			tagListOne(){
+				this.http("/app_baby/tagListOne").then(res=>{
+					if(res.code==1){
+						this.tips = res.data
+					}else{
+						uni.showToast({
+							title:"暂无信息",
+							icon:"none"
+						})
+					}
+					
+				})
 			}
 		}
 	}

@@ -13,11 +13,10 @@
 			</view>
 			<view class="item">
 				<view class="list">
-					<view class="name">生日</view>
+					<view class="name">{{userInfo.type==1?"预产期":"生日"}}</view>
 					<picker mode="date" :value="userInfo.date" :start="startDate" :end="endDate" @change="dateChange" class="inp" style="width:45%;" fields="day">
-						<view style="font-size: 24upx;">{{userInfo.date}}</view>
+						<view style="font-size: 24upx;">{{userInfo.type==1?userInfo.due_date:userInfo.birth_date}}</view>
 					</picker>
-					<!-- <input type="text" placeholder="请输入宝宝的生日" placeholder-style="color:#DCDCDC;font-size:24upx" class="inp" v-model="userInfo.birthday"> -->
 				</view>
 			</view>
 			<view class="item">
@@ -32,7 +31,7 @@
 			</view>
 		</view>
 		
-		<view class="bot">
+		<view class="bot" v-if="false">
 			<text class="tips">你与宝宝的关系</text>
 			<view class="select">
 				<radio-group @change="radioChange" class="select-group" data-lei="relative">
@@ -72,9 +71,11 @@
 			})
 			return {
 				userInfo:{
-					name:"",
-					date: currentDate,
-					relativeName:'0',
+					type:"",//1已怀孕 2已出生
+					name:"",//小名
+					due_date:"请选择预产期",//预产期(已怀孕)
+					birth_date: currentDate,//生日
+					//relativeName:'0',
 					sex: 0,
 				},
 				sex: [
@@ -107,12 +108,13 @@
 			};
 		},
 		onLoad(opt) {
-			this.gender=opt.type
+			this.userInfo.type=opt.type
 		},
 		methods:{
 			// 选择日期
 			dateChange(e) {
-				this.userInfo.date = e.target.value
+				this.userInfo.birth_date = e.target.value
+				this.userInfo.due_date = e.target.value
 			},
 			
 			// 获取年月日信息
@@ -142,17 +144,53 @@
 					})
 					return 
 				}
-				if(!this.userInfo.date){
+				if(!this.userInfo.birth_date){
 					uni.showToast({
 						title:"请输入宝宝生日",
 						icon:"none"
 					})
 					return 
 				}
+				if(this.userInfo.type==1){
+					if(this.userInfo.due_date=="请选择预产期"){
+						uni.showToast({
+							title:"请输入预产期",
+							icon:"none"
+						})
+						return 
+					}
+				}
+				
+				let obj = {}
+				if(this.userInfo.type==2){
+					this.userInfo.due_date=''
+				}
+				if(this.userInfo.type==1){
+					this.userInfo.birth_date=''
+				}
 				let type="addbaby"
-				uni.reLaunch({
-					url:"/pages/index/index?type="+type
+				this.http("/app_baby/add",this.userInfo).then(res=>{
+					if(res.code==1){
+						uni.showToast({
+							title:"添加成功",
+							icon:"none"
+						})
+						setTimeout(()=>{
+							uni.reLaunch({
+								url:"/pages/index/index"
+							})
+						},1200)
+						console.log(res)
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
 				})
+				// uni.reLaunch({
+				// 	url:"/pages/index/index?type="+type
+				// })
 				
 			},
 			

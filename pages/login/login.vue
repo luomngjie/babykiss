@@ -210,34 +210,66 @@
 			 */
 			quickLogin(provider, type){
 				let self = this
+				if(type==2){
+					uni.showToast({
+						title:'暂未开通QQ登录,请选择微信登录或者密码、验证码登录。',
+						icon:"none"
+					})
+					return
+				}
 				uni.login({
 					provider: provider,
 					success(){
 						uni.getUserInfo({
 							provider: provider,
 							success(result){
+								let obj = {}
 								let openId = result.userInfo.openId
 								let nickName = result.userInfo.nickName
 								let avatarUrl = ''
+								obj.openid = result.userInfo.openId
+								//obj.nickname = result.userInfo.nickName
+								
 								if(type == 1){
 									avatarUrl = result.userInfo.avatarUrl
 								}else {
 									avatarUrl = result.userInfo.figureurl_qq || result.userInfo.avatarUrl
 								}
-								uni.navigateTo({
-									url:"/pages/login/wxPhone"
+								//obj.avatar = avatarUrl
+								//obj.type = type
+								
+								
+								self.http("/user/get_wx",obj).then(res=>{
+									if(res.code==1){
+										uni.setStorage({
+											key: 'userInfo',
+											data: res.data.userinfo
+										})
+										self.$toast(res.msg, ()=>{
+											setTimeout(() => {
+												uni.switchTab({
+													url: '/pages/index/index'
+												})
+											}, 1000)
+										}, 1000)
+									}else{
+										if(res.data){
+											if(res.data.jump_code == 1){
+												uni.showToast({
+													title:res.msg,
+													icon:'none'
+												})
+												setTimeout(()=>{
+													uni.reLaunch({
+														url:"/pages/login/wxPhone?openid="+openId+"&nickname="+nickName+"&avatar="+avatarUrl
+													})
+												},1200)
+												
+											}
+										}
+									}
 								})
 								
-								// self.http({
-								// 	url:"/user/get_wx",
-								// 	data:{openid:openId},
-								// 	success:res=>{
-								// 		console.log(res)
-								// 		uni.navigateTo({
-								// 			url:"/pages/login/wxPhone"
-								// 		})
-								// 	}
-								// })
 							}
 						})
 					}
