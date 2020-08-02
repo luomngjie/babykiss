@@ -1,21 +1,8 @@
 <template>
 	<view class="content" :style="{'height':height-80+'px'}">
-		<!-- <view class="navBar" >
-			<view class="leftNav" @click="left">
-				<image src="../../../../static/img/left.png" class="navImg"></image>
-				<view class="name">宝宝</view>
-			</view>
-			<view style="font-size: 26upx;" >
-				何苦
-			</view>
-			<view class="photo-item" @click="right">
-				
-				<image src="../../../../static/img/more.png" class="pahoto"></image>
-			</view>
-		</view> -->
 		<custom  :back="true"
 			class="custom" @click-left="left"
-			:title="'何苦'"  :bg="'#fff'"
+			:title="title"  :bg="'#fff'"
 			:statusBarBackground="'#fff'">
 			<view slot="right" >
 				<view class="photo-item" >
@@ -25,20 +12,48 @@
 		</custom>
 		
 		<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
-			<view class="tlak_o" >
+			<view class="tlak_o" v-for="(item,index) in data" :key="index" v-if="data">
 				<view class="date">
-					<view class="day">昨天</view>
-					<view class="dayNumber">第14天</view>
+					<view class="day" v-if="item.date">{{item.date}}</view>
+					<view class="dayNumber">第{{item.day}}天</view>
 				</view>
+				
+				<image :src="item.file[0]?item.file[0]:backgroundImg" class="menu-image" ></image>
 				
 				<view class="date">
-					<view class="dayNumber">看见</view>
+					<view class="dayNumber" v-if="item.describe">{{item.describe}}</view>
 				</view>
 				
-				<view class="first">
-					<view class="list" @click="firstFun">第一次脐带掉落看见</view>
+				<view class="first" v-if="item.baby_tag_one.length>0">
+					<view class="list" @click="firstFun" v-for="(items,index) in item.baby_tag_one">{{items.tag}}</view>
 				</view>
 				
+				
+				<view class="tabbar">
+					<view class="name">
+						<text>爸爸,1小时前</text>
+					</view>
+					<image src="../../../../static/img/mess.png" class="image"></image>
+				</view>
+				
+				<view class="tabbar">
+					<view class="name">
+						<text>爸爸被萌化了</text>
+					</view>
+				</view>
+			</view>
+			
+			<view class="tlak_o" v-if="weight">
+				<view class="date">
+					<view class="day" v-if="weight.time">{{weight.time}}</view>
+					<view class="dayNumber">第{{weight.day||0}}天</view>
+				</view>
+				
+				<view class="con" style="display: flex;flex-direction: row;flex-wrap: wrap;width:550upx;">
+					<view class="name" style="font-size:26upx;color:black;margin:15upx 30upx;">身高&nbsp;&nbsp;{{weight.height}}</view>
+					<view class="name" style="font-size:26upx;color:black;margin:15upx 30upx;">体重&nbsp;&nbsp;{{weight.weight}}</view>
+					<view class="name" style="font-size:26upx;color:black;margin:15upx 30upx;">头围&nbsp;&nbsp;{{weight.head_width}}</view>
+				</view>
 				
 				<view class="tabbar">
 					<view class="name">
@@ -81,13 +96,73 @@
 	export default {
 		data() {
 			return {
-				height:0
+				height:0,
+				title:"何苦",
+				parame:null,
+				backgroundImg:require('../../../../static/img/banner.jpg'),
+				data:null,//展示的数据
+				weight:null,//体重详情
+				obj:{}//详情请求参数
 			};
 		},
-		onLoad() {
+		onLoad(opt) {
+			if(opt.item){
+				this.parame = JSON.parse(opt.item)
+				this.obj.baby_id = this.parame.baby_id
+				if(this.parame.type==2){
+					this.obj.memorabilia_id=this.parame.morph_to_model.id
+					this.detailsMemorabilia()
+				}else if(this.parame.type==1){
+					this.obj.weight_id=this.parame.morph_to_model.id
+					this.detailsWeight()
+				}
+				
+			}
+			
 			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
+			/**
+			 * 大事记详情
+			 */
+			detailsMemorabilia(){
+				uni.showLoading({
+					title:"加载中..."
+				})
+				this.http("/app_baby/detailsMemorabilia",this.obj).then(res=>{
+					if(res.code==1){
+						this.data = res.data.data
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+					uni.hideLoading()
+				})
+			},
+			
+			/**
+			 * 体重详情
+			 */
+			detailsWeight(){
+				uni.showLoading({
+					title:"加载中..."
+				})
+				this.http("/app_baby/detailsWeight",this.obj).then(res=>{
+					if(res.code==1){
+						this.weight = res.data
+						console.log(this.weight)
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+					uni.hideLoading()
+				})
+			},
+			
 			/**
 			 * nav左侧返回
 			 */
@@ -190,6 +265,10 @@
 			padding-bottom: 20upx;
 			flex-direction: column;
 			margin-bottom: 33upx;
+			.menu-image{
+				width:100%;
+				height:305upx;
+			}
 			.date{
 				display: flex;
 				flex-direction: row;

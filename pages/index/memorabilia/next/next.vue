@@ -47,7 +47,7 @@
 				</view>
 				
 			</view>
-			<view class="line"></view>
+			<!-- <view class="line"></view>
 			<view class="vacName" @click="see">
 				<view class="name" >
 					<image src="../../../../static/img/time.png" class="image"></image>
@@ -57,7 +57,7 @@
 					<text>所有亲</text>
 					<image src="../../../../static/img/jiantou.png" class="image"></image>
 				</view>
-			</view>
+			</view> -->
 			<view class="line"></view>
 			<view class="vacName" @click="hrefFun">
 				<view class="name">
@@ -137,8 +137,12 @@
 				this.tips=uni.getStorageSync("tags")
 				this.taglist = this.tips
 			}
-			this.imageList.push(this.apis+uni.getStorageSync('img'))
-			this.imagesList.push(uni.getStorageSync('img'))
+			
+			if(uni.getStorageSync('img')){
+				this.imageList.push(this.apis+uni.getStorageSync('img'))
+				this.imagesList.push(uni.getStorageSync('img'))
+			}
+			
 			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
@@ -173,14 +177,12 @@
 				})
 				imgs.push(obj)
 				this.parame.file = JSON.stringify(imgs)
-				console.log(this.parame)
 				if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
 					this.http("/app_baby/addMemorabilia",this.parame).then(res=>{
 						if(res.code==1){
-							console.log(res)
-							// uni.redirectTo({
-							// 	url:"/pages/index/baby_detail"
-							// })
+							uni.redirectTo({
+								url:"/pages/index/baby_detail"
+							})
 						}
 						
 					})
@@ -223,6 +225,9 @@
 				
 			},
 			
+			/**
+			 * @param {Object} imgAll添加图片
+			 */
 			addPic(imgAll){
 				this.imgAllUrl = [];
 				this.imagesAll=[];
@@ -278,6 +283,7 @@
 					content: '是否删除该图片？',
 					success: (res) =>{
 						if (res.confirm) {
+							if(uni.getStorageSync("img")) uni.removeStorageSync("img")
 							//删除数组中指定项
 							function removeByValue(arr, val) {
 								for(var i=0; i<arr.length; i++) {

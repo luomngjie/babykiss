@@ -45,7 +45,7 @@
 			</view>
 			
 			
-			<view class="timeLine" v-if="talks.length==0">
+			<view class="timeLine" v-if="talk.length==0">
 				<view class="scroll">
 					<view class="item-menu"  @tap.stop="upload">
 						<view class="day">7月12日&nbsp;第1天</view>
@@ -57,7 +57,7 @@
 					</view>
 				</view>
 			</view>
-			<ysteps :talk="talk" :type="type" v-else></ysteps>
+			<ysteps :talk="talk" :type="type" v-else @fun="detail"></ysteps>
 			
 			<uni-popup type="center" ref="operation" zIndex="999">
 				<view class="popup-center">
@@ -85,7 +85,7 @@
 					<image src="../../static/img/banner.jpg" class="bg"></image>
 				</view>
 				<view class="bottomItem" >
-					<view class="items" v-for="(item,index) in bottom" :key="index" :animation="animationData" >
+					<view class="items" v-for="(item,index) in bottom" :key="index" :animation="animationData" @click="animateFun(item.name)">
 						<view class="menu" :style="{'background':item.bg}">
 							<image :src="item.img" class="item-img"></image>
 						</view>
@@ -134,61 +134,7 @@
 				type:"index",//用于时间线类型区别。区分首页时间线样式和宝宝大事记样式
 				isShows:false,//是否显示遮罩层
 				color:[525,255,30],
-				talk: [
-					{
-						"id": 1,
-						"MMDD": "1月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "李四",
-									"hms": "第一次学游泳",
-									"talk": "好嗨哟",
-									"image":'../../static/img/banner.jpg'
-								}
-							}
-						]
-						
-					},
-					{
-						"id": 2,
-						"MMDD": "10月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "李阿达",
-									"HMS": "05:20:18",
-									"talk": "测试数据测试数据测试数据测试数据测试数据测试数据",
-								}
-							}
-						]
-						
-					},
-					{
-						"id": 3,
-						"MMDD": "5月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "165.0.cm",
-									"hms": "56.0kg",
-									"talk": "15.0cm",
-								}
-							},
-							{
-								"user": {
-									"u_name": "165.0.cm",
-									"hms": "156.0kg",
-									"talk": "15.0cm",
-								}
-							}
-							
-						]
-						
-					}
-					
-				],
-				talks:[],//宝宝大事记和体重数据
+				talk: [],
 				nav:[
 					
 					{
@@ -242,6 +188,32 @@
 			
 		},
 		methods: {
+			/**
+			 * @param {Object} e底部动画跳转
+			 */
+			animateFun(e){
+				if(e=="日记"){
+					uni.navigateTo({
+						url:"/pages/index/memorabilia/next/next"
+					})
+				}else if(e=="大事记"){
+					uni.navigateTo({
+						url:"/pages/index/memorabilia/add/add?custom=1"
+					})
+				}else if(e=="身高体重"){
+					uni.navigateTo({
+						url:"/pages/index/growth_record/add"
+					})
+				}
+			},
+			/**
+			 * 大事记详情
+			 */
+			detail(e){
+				uni.navigateTo({
+					url:"/pages/index/memorabilia/detail/detail?item="+JSON.stringify(e)
+				})
+			},
 			/**
 			 * 获取当前日期
 			 */
@@ -382,7 +354,7 @@
 			appBabyLogList(){
 				this.http("/app_baby/appBabyLogList",{baby_id:this.param.id}).then(res=>{
 					if(res.code==1){
-						this.talks = res.data.data
+						this.talk = res.data.data
 					}else{
 						uni.showToast({
 							title:res.msg,
@@ -446,15 +418,16 @@
 				})
 				this.$refs["operation"].close()
 			},
+			/**
+			 * @param {Object} opt
+			 * 滚动底部事件，无无限加载
+			 */
+			onReachScollBottom(e){
+				
+			},
 			
 		},
-		/**
-		 * @param {Object} opt
-		 * 滚动底部事件，无无限加载
-		 */
-		onReachScollBottom(e){
-			
-		},
+		
 		onLoad(opt) {
 			this.param = uni.getStorageSync("babyItem")
 			this.height=this.$store.state.system.screenHeight

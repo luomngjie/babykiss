@@ -3,28 +3,30 @@
 		<view class="set_box" >
 			<!-- 步骤条 -->
 			<view class="set-1">
+				
 				<view class="set-2" v-for="(item,index) in talk" :key="index">
 					<!-- <view class="quan" ></view> -->
-					<view style="font-size: 32upx;">{{item.MMDD}}<text style="font-size: 20upx;margin-left: 10upx;">第11天</text></view>
+					<view style="font-size: 32upx;">{{item.MMDD}}<text style="font-size: 20upx;margin-left: 10upx;color:black;">第{{item.diff_day}}天</text></view>
 					<template v-if="type=='index'">
-						<view class="tlak_o" v-for="(cItem,index_) in item.data" >
-							<view class="menu" v-if="item.id==3">
-								<view class="list">身高<text style="margin-left:10upx;">{{cItem.user.u_name}}</text></view>
-								<view class="list">体重<text style="margin-left:10upx;">{{cItem.user.hms}}</text></view>
-								<view class="list">头围<text style="margin-left:10upx;">{{cItem.user.talk}}</text></view>
+						<view class="tlak_o" @click="detail(item)">
+							<!-- v-for="(cItem,index_) in item.data" -->
+							<view class="menu" v-if="item.type==1">
+								<view class="list">身高<text style="margin-left:10upx;">{{item.morph_to_model.height}}</text></view>
+								<view class="list">体重<text style="margin-left:10upx;">{{item.morph_to_model.weight}}</text></view>
+								<view class="list">头围<text style="margin-left:10upx;">{{item.morph_to_model.head_width}}</text></view>
 							</view>
-							<view class="menu" v-if="item.id==2">
+							<!-- <view class="menu" v-if="item.id==2">
 								<view class="" style="font-size: 12px;"><text style="margin-left:10upx;">{{cItem.user.talk}}</text></view>
 								
-							</view>
-							<view class="col-img" v-if="item.id==1">
-								<image :src="cItem.user.image" class="menu-image"></image>
-								<view class="conten">{{cItem.user.talk}}</view>
-								<view class="conten first">{{cItem.user.hms}}</view>
+							</view> -->
+							<view class="col-img" v-if="item.type==2" >
+								<image :src="item.morph_to_model.file[0]?item.morph_to_model.file[0]:backgroundImg" class="menu-image"></image>
+								<view class="conten" v-if="item.morph_to_model.describe">{{item.morph_to_model.describe}}</view>
+								<view class="conten first" v-if="item.morph_to_model.tag">{{item.morph_to_model.tag}}</view>
 							</view>
 							<view class="tabbar">
 								<view class="name">
-									<text>爸爸,1小时前</text>
+									<text>爸爸,{{item.morph_to_model.date?item.morph_to_model.date:item.morph_to_model.time}}</text>
 								</view>
 								<image src="../../static/img/mess.png" class="image"></image>
 							</view>
@@ -32,9 +34,15 @@
 					</template>
 					
 					<template v-if="type=='note'">
-						<view class="note" @click="detail(item)" v-for="(items,j) in item.data">
-							<view class="tip">{{items.user.hms}}</view>
-							<view class="tip con">{{items.user.talk}}</view>
+						<view class="note" @click="detail(item)" v-if="item.describe">
+							<view class="tip">第一次{{item.baby_tag_one[0].tag}}</view>
+							<view class="tip con">{{item.describe}}</view>
+						</view>
+						<view class="note" @click="upload" v-else>
+							<view class="tip">第一次{{item.tag}}</view>
+							<view class="tip con">
+								<image src="../../static/img/jia.png" style="width:50upx;height:50upx"></image>
+							</view>
 						</view>
 					</template>
 					
@@ -59,21 +67,73 @@
 		},
 		data() {
 			return {
-				
+				backgroundImg:require('../../static/img/banner.jpg'),
 			}
+		},
+		onLoad() {
+			
 		},
 		methods: {
 			/**
 			 * 宝宝大事记时间线的点击事件
 			 */
-			detail(index){
-				this.$emit("fun",index)
-			}
+			detail(item){
+				this.$emit("fun",item)
+			},
+			
+			/**
+			 * 第一次，没数据
+			 */
+			upload(){
+				let self=this
+				uni.chooseImage({
+				    // count: 6, //可以选择图片的张数
+				    sourceType:['album'], //从相册选择  默认是两个都有
+				    success: function (res) {
+						//JSON.stringify(res.tempFilePaths)
+						
+				        uni.showLoading({
+				        	title:"图片上传中"
+				        })
+				        uni.uploadFile({
+				        	url:self.api+'/file_upload/upload',
+				        	fileType:'image',
+				        	filePath:res.tempFilePaths[0],
+				        	sizeType: ['compressed'],  
+				        	name:'file',  
+				        	formData:{
+				        		token:uni.getStorageSync('userInfo').token
+				        	},
+				        	success: (uploadFileRes) => {
+				        		let obj = JSON.parse(uploadFileRes.data);
+				        		if(obj.code==1){
+									uni.setStorageSync("img",obj.data.str_url)
+				        			uni.navigateTo({
+				        				url:"/pages/index/memorabilia/next/next"
+				        			})
+				        			
+				        		}
+				        		
+				        	},
+				        	fail:(error)=>{
+				        		uni.showToast({
+				        			title:"图片上传失败",
+				        			icon:"none"
+				        		})
+				        	}
+				        })
+				        uni.hideLoading({
+				        	title:"图片上完毕"
+				        })
+						//返回结果
+				    }
+				})
+			},
 		}
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.set_box {
 		width: 100%;
 		height: 100%;
@@ -198,6 +258,7 @@
 				align-items: center;
 				justify-content: center;
 				margin: 0 33upx;
+				text-align: center;
 			}
 		}
 	}

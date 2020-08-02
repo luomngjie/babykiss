@@ -1,8 +1,8 @@
 <template>
 	<view class="content" :style="{'height':height-80+'px'}">
-		<custom :back="true" :title="title"  rightText="添加" @click-right="add" ></custom>
+		<custom :back="true" :title="title"  rightText="添加" @click-right="add" :bg="'#fff'" :statusBarBackground="'#fff'"></custom>
 		<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
-			<view class="nav">
+			<view class="nav" v-if="tips.length>0">
 				<view class="list" v-for="(item,index) in tips" :key="index">{{item.name}}</view>
 			</view>
 			
@@ -24,60 +24,7 @@
 				title:"宝宝大事记",
 				height:0,
 				type:"note",//用于时间线类型区别。区分首页时间线样式和宝宝大事记样式
-				talk: [
-					{
-						"id": 1,
-						"MMDD": "1月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "李四",
-									"hms": "第一次学游泳",
-									"talk": "好嗨哟",
-									"image":'../../../static/img/banner.jpg'
-								}
-							}
-						]
-						
-					},
-					{
-						"id": 2,
-						"MMDD": "10月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "李阿达",
-									"HMS": "05:20:18",
-									"talk": "测试数据测试数据测试数据测试数据测试数据测试数据",
-								}
-							}
-						]
-						
-					},
-					{
-						"id": 3,
-						"MMDD": "5月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "165.0.cm",
-									"hms": "56.0kg",
-									"talk": "15.0cm",
-								}
-							},
-							{
-								"user": {
-									"u_name": "165.0.cm",
-									"hms": "156.0kg",
-									"talk": "15.0cm",
-								}
-							}
-							
-						]
-						
-					}
-					
-				],
+				talk: [],
 				tips:[
 					{
 						name:"路径",
@@ -106,7 +53,8 @@
 			listMemorabiliaOne(){
 				this.http("/app_baby/listMemorabiliaOne",{baby_id:uni.getStorageSync("babyItem").id}).then(res=>{
 					if(res.code==1){
-						//console.log(res)
+						this.talk = res.data.memorabilia.length>0?res.data.memorabilia:res.data.array_tag
+						
 					}else{
 						uni.showToast({
 							title:res.msg,
@@ -120,9 +68,10 @@
 			 * 大事记列表顶部标签
 			 */
 			listMemorabiliaBabyTag(){
-				this.http("/app_baby/listMemorabiliaBabyTag",{baby_id:uni.getStorageSync("babyItem").id}).then(res=>{
+				this.http("/app_baby/tagListCustom",{baby_id:uni.getStorageSync("babyItem").id}).then(res=>{
 					if(res.code==1){
-						console.log(res)
+						this.tips = res.data
+						
 					}else{
 						uni.showToast({
 							title:res.msg,
