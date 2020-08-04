@@ -11,7 +11,7 @@
 		</custom>
 		
 		<view class="name" v-if="type=='name'">
-			<input type="text" v-model="name" @blur="input">
+			<input type="text" v-model="parame.name" @blur="input">
 		</view>
 		
 		<view class="tabCon">
@@ -32,14 +32,14 @@
 		data() {
 			return {
 				titleCen:"",
-				name:"",
+				
 				img:require("../../../static/img/gou.png"),
-				parame:{},//提交的数据
+				parame:{blood_type:4},//提交的数据
 				current:0,
 				boold:[
 					{
 						name:"O型",
-						type:0
+						type:4
 					},
 					{
 						name:"A型",
@@ -52,12 +52,7 @@
 					{
 						name:"AB型",
 						type:3
-					},
-					{
-						name:"未知",
-						type:4
-					}
-				],
+					}],
 				type:''//类型
 			};
 		},
@@ -66,11 +61,13 @@
 			this.type = opt.type
 			if(opt.type=="boold"){
 				this.parame.type=0
-				this.parame.name="O型"
+				
 			}else if(opt.type="name"){
-				this.name = baby.name
-				this.parame.name = baby.baby
+				
+				this.parame.name = baby.name
 			}
+			this.parame.blood_type=4
+			this.parame=baby
 			this.titleCen=opt.title
 		},
 		methods:{
@@ -85,16 +82,42 @@
 			 * 修改信息的保存
 			 */
 			save(){
-				this.http("/app_baby/updateBaby",this.parame).then(res=>{
+				uni.showLoading({
+					title:"加载中..."
+				})
+				let obj = {}
+				obj.baby_id = this.parame.id
+				obj.head_portrait = this.parame.head_portrait
+				obj.cover = this.parame.cover
+				obj.name = this.parame.name
+				obj.sex = this.parame.sex
+				obj.type = this.parame.type
+				obj.status = this.parame.status
+				obj.due_date = this.parame.due_date
+				obj.birth_date = this.parame.birth_date
+				obj.birth_moment = this.parame.birth_moment
+				obj.weight = this.parame.weight
+				obj.blood_type = this.parame.blood_type
+				
+				this.http("/app_baby/updateBaby",obj).then(res=>{
 					if(res.code==1){
-						
+						uni.showToast({
+							title:"修改成功",
+							icon:"none"
+						})
+						this.$store.commit("babyItem",this.parame)
+						setTimeout(()=>{
+							uni.redirectTo({
+								url:"/pages/index/baby_infor/baby_information"
+							})
+						},1200)
 					}else{
 						uni.showToast({
 							title:res.msg,
 							icon:"none"
 						})
 					}
-					console.log(res)
+					uni.hideLoading()
 				})
 			},
 			
@@ -110,7 +133,9 @@
 			 */
 			select(index,item){
 				this.current = index
-				this.parame = item
+				this.parame.blood_type=item.type
+				console.log(item)
+				//this.parame = item
 				
 			}
 		}

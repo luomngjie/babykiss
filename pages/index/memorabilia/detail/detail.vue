@@ -76,7 +76,7 @@
 				<view class="line"/>
 				<view class="item-list" >分享</view>
 				<view class="line"/>
-				<view class="item-list" >编辑</view>
+				<view class="item-list" @click="edit">编辑</view>
 				<view class="line"/>
 				<view class="item-list" @tap.stop="deleted">删除</view>
 				<view class="item-list" @tap.stop="cancel">取消</view>
@@ -122,6 +122,22 @@
 			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
+			/**
+			 * 编辑
+			 */
+			edit(){
+				if(this.parame.type==2){
+					uni.navigateTo({
+						url:"/pages/index/memorabilia/next/next"
+					})
+					
+				}else if(this.parame.type==1){
+					uni.navigateTo({
+						url:"/pages/index/growth_record/add"
+					})
+				}
+				this.$refs["popup"].close()
+			},
 			/**
 			 * 大事记详情
 			 */
@@ -217,7 +233,33 @@
 			 * modal确定按钮
 			 */
 			modalConfirm(){
+				if(this.parame.type==2){
+					let url="/app_baby/babyMemorabiliaDel";
+					let obj={
+						baby_id:this.obj.baby_id,
+						memorabilia_id:this.parame.id
+					}
+					this.del(url,obj)
+				}else if(this.parame.type==1){
+					
+				}
+				
 				this.$refs.quanxian.close()
+			},
+			
+			del(url,obj){//删除
+				this.http(url,obj).then(res=>{
+					if(res.code==1){
+						uni.redirectTo({
+							url:"/pages/index/baby_detail"
+						})
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+				})
 			},
 			
 			/**

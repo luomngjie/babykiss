@@ -242,7 +242,7 @@
 			 * 宝宝详情
 			 */
 			detail(item){
-				uni.setStorageSync("babyItem",item)
+				this.$store.commit("babyItem",item)
 				uni.navigateTo({
 					url:"/pages/index/baby_detail"
 				})
@@ -378,15 +378,10 @@
 						this.show = false
 						this.page.page++
 						this.status="more"
-						//this.babyList=res.data.data
+						
 						this.page.total = res.data.total
 						this.babyList=this.babyList.concat(res.data.data)
-						// if(this.babyList.length<res.data.data.length){
-						// 	this.status = 'more'
-						// 	return
-						// }else{this.status = 'noMore'
-							
-						// }
+						
 						if(this.babyList.length==res.data.total){
 							this.status = 'noMore'
 							this.flage = false

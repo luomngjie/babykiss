@@ -24,7 +24,8 @@
 			<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" 
 			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
 			
-			<view class="background">
+			<view class="background" :style="{backgroundImage:`url(${param.cover!=''?apis+'/'+param.cover:backgroundImg})`}">
+				<!--  -->
 				<view class="logo">
 					<image src="../../static/img/baby.png" class="img" @click="imgpopup"></image>
 					<view class="right" @tap.click="babyInfor">
@@ -112,6 +113,7 @@
 		data() {
 			return {
 				backgroundImg:require('../../static/img/banner.jpg'),
+				apis:"https://api.diewo.cn/",
 				animationData:{},
 				bottom:[
 					{
@@ -596,7 +598,6 @@
 		 }
 		.background{
 			height:400upx;
-			background-image: url("../../static/img/banner.jpg");
 			background-position: center;
 			background-repeat: no-repeat;
 			background-size: cover;

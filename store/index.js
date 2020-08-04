@@ -7,7 +7,8 @@ const store = new Vuex.Store({
 	state: {
 		number:1,
 		system:{},
-		baby:[]
+		baby:[],
+		babyInformat:{}//修改宝宝信息
 	},
 	getters: {
 	},
@@ -24,6 +25,10 @@ const store = new Vuex.Store({
 			state.baby.push(data)
 			uni.setStorageSync("tags",state.baby)
 		},
+		babyItem(state,data){
+			state.babyInformat=data
+			uni.setStorageSync("babyItem",state.babyInformat)
+		}
 	}
 })
 
