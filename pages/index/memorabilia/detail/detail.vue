@@ -119,6 +119,7 @@
 				
 			}
 			
+			
 			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
@@ -128,7 +129,7 @@
 			edit(){
 				if(this.parame.type==2){
 					uni.navigateTo({
-						url:"/pages/index/memorabilia/next/next"
+						url:"/pages/index/memorabilia/next/next?type="+"echo"+"&memorabilia_id="+this.parame.morph_to_model.id
 					})
 					
 				}else if(this.parame.type==1){
@@ -168,7 +169,6 @@
 				this.http("/app_baby/detailsWeight",this.obj).then(res=>{
 					if(res.code==1){
 						this.weight = res.data
-						console.log(this.weight)
 					}else{
 						uni.showToast({
 							title:res.msg,
@@ -237,11 +237,16 @@
 					let url="/app_baby/babyMemorabiliaDel";
 					let obj={
 						baby_id:this.obj.baby_id,
-						memorabilia_id:this.parame.id
+						memorabilia_id:this.parame.morph_to_model.id
 					}
 					this.del(url,obj)
 				}else if(this.parame.type==1){
-					
+					let url="/app_baby/deleteWeight";
+					let obj={
+						baby_id:this.obj.baby_id,
+						weight_id:this.parame.morph_to_model.id
+					}
+					this.del(url,obj)
 				}
 				
 				this.$refs.quanxian.close()

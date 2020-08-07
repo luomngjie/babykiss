@@ -41,7 +41,7 @@
 					
 				</view>
 				
-				<view class="list" v-if="tips.length<1">
+				<view class="list" v-if="tips.length<2">
 					<image src="../../../../static/img/jia.png" class="img"></image>
 					<text @click="tipsFun(0)">标签</text>
 				</view>
@@ -120,7 +120,10 @@
 				imagesAll:[],
 				
 				apis:"https://api.diewo.cn/",//图片上传
-				
+				url:"/pages/index/memorabilia/add/add?tags="+JSON.stringify(this.tags)+"&type="+"echo",//标签点击路径，从回显进入
+				urls:"/pages/index/memorabilia/add/add?tags="+JSON.stringify(this.tags),//标签点击路径，不从回显进入
+				type:'',//是否是回显的大事记详情
+				memorabilia_id:"",//大事记主键id
 				tips:[]
 			};
 		},
@@ -135,7 +138,7 @@
 			
 			if(uni.getStorageSync("tags")){
 				this.tips=uni.getStorageSync("tags")
-				this.taglist = this.tips
+				
 			}
 			
 			if(uni.getStorageSync('img')){
@@ -143,9 +146,44 @@
 				this.imagesList.push(uni.getStorageSync('img'))
 			}
 			
+			if(opt.type=="echo"){
+				this.type = opt.type
+				this.memorabilia_id = opt.memorabilia_id
+				this.echo(opt.memorabilia_id)
+			}
+			
 			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
+			/**
+			 * @param {Object} 大事记详情编辑回显 type为echo调用
+			 * @param {Object} 
+			 */
+			echo(id){
+				let obj = {}
+				obj.baby_id=uni.getStorageSync("babyItem").id
+				obj.memorabilia_id=id
+				this.http("/app_baby/detailsMemorabilia",obj).then(res=>{
+					if(res.code==1){
+						res.data.data.forEach(item=>{
+							this.parame.describe = item.describe
+							if(item.file.length!=0){
+								
+								this.parame.file = item.file
+							}
+							
+							this.parame.tag = item.baby_tag_one
+						})
+						
+						
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+				})
+			},
 			/**
 			 *自定义标签点击回显
 			 */
@@ -171,17 +209,33 @@
 				
 				let imgs=[],obj={}
 				this.parame.baby_id = uni.getStorageSync("babyItem").id
-				this.imagesList.forEach(item=>{
-					obj.file=item
-					
-				})
-				imgs.push(obj)
-				this.parame.file = JSON.stringify(imgs)
+				
+				if(this.imagesList.length!=0){
+					this.imagesList.forEach(item=>{
+						obj.file=item
+						
+					})
+					imgs.push(obj)
+					this.parame.file = JSON.stringify(imgs)
+				}
+				
+				let arr=[]
+				if(uni.getStorageSync("tag")&&this.tips){
+					arr.push(uni.getStorageSync("tag"))
+					this.parame.tag = JSON.stringify(this.tips.concat(arr))
+				}
 				if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
 					this.http("/app_baby/addMemorabilia",this.parame).then(res=>{
 						if(res.code==1){
 							uni.redirectTo({
 								url:"/pages/index/baby_detail"
+							})
+							uni.removeStorageSync("tags")
+							uni.removeStorageSync("tag")
+						}else{
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
 							})
 						}
 						
@@ -272,7 +326,7 @@
 					urls: this.imageList
 				})
 			},
-			/**
+			/** 
 			 * @param {Object} index
 			 * @param {Object} e 删除图片
 			 */
@@ -317,9 +371,16 @@
 					})
 				}else{
 					this.parame.tag=item
-					uni.navigateTo({
-						url:"/pages/index/memorabilia/add/add?custom="+item
-					})
+					if(this.type=="echo"){
+						uni.navigateTo({
+							url:"/pages/index/memorabilia/add/add?custom="+item+"&type="+this.type+"&memorabilia_id="+this.memorabilia_id
+						})
+					}else{
+						uni.navigateTo({
+							url:"/pages/index/memorabilia/add/add?custom="+item
+						})
+					}
+					
 				}
 				
 			},
@@ -329,29 +390,12 @@
 			 */
 			removes(data){
 				let tags = uni.getStorageSync("tags")
-				
-				for(var i=0; i<this.taglist.length; i++) {
-					if(this.taglist[i].id == data.id) {
-						this.taglist.splice(i, 1);
-						this.tips = this.taglist
-						this.$store.commit("baby",this.tips[0])
-						this.parame.tag.push(this.tips[0])
-						if(this.tips.length==0){
-							uni.removeStorageSync("tags")	
-						}
-						break;
-					}else{
-						console.log('一处')
-						this.tips = ''
-						uni.removeStorageSync("tags")	
-					}
+				let obj = tags.splice(tags.findIndex(e => e.tag === data.tag), 1)
+				this.$store.commit("removeBaby",tags)
+				this.tips = tags
+				if(tags.length<=0){
+					uni.removeStorageSync("tags")
 				}
-				// if(tags){
-				// 	tags.forEach(item=>{
-				// 		this.parame.tag.push(item)
-				// 	})
-				// }
-				
 				
 			},
 			

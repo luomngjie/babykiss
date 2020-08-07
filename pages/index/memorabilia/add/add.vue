@@ -34,13 +34,20 @@
 				},
 				custom:'',
 				tips:[],
-				tags:[]
+				tags:[],
+				type:'',//是否是回显的大事记详情
+				memorabilia_id:''//大事记主键id
 			};
 		},
 		onLoad(opt) {
 			this.custom = opt.custom
 			if(opt.custom!=1){
 				this.select = false
+			}
+			
+			if(opt.type=="echo"){
+				this.type = opt.type
+				this.memorabilia_id = opt.memorabilia_id
 			}
 			
 			this.select?this.tag.is_one=1:this.tag.is_one=0
@@ -74,12 +81,13 @@
 					return
 				}
 				uni.navigateTo({
-					url:"/pages/index/memorabilia/next/next",
+					url:this.type?"/pages/index/memorabilia/next/next?type="+this.type+"&memorabilia_id="+this.memorabilia_id:"/pages/index/memorabilia/next/next",
 					success:()=>{
 						if(this.custom==1){
 							uni.setStorageSync("tag",this.tag)
 						}else{
-							this.$store.commit("baby",this.tag||'')
+							this.$store.commit("addbaby",this.tag)
+							//console.log(arr)
 							//uni.setStorageSync("tags",this.tag)
 						}
 						

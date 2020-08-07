@@ -7,7 +7,7 @@ const store = new Vuex.Store({
 	state: {
 		number:1,
 		system:{},
-		baby:[],
+		addbaby:[],
 		babyInformat:{}//修改宝宝信息
 	},
 	getters: {
@@ -21,9 +21,18 @@ const store = new Vuex.Store({
 		getSystem(state,data){
 			state.system=data
 		},
-		baby(state,data){
-			state.baby.push(data)
-			uni.setStorageSync("tags",state.baby)
+		addbaby(state,data){ //添加标签
+			if(state.addbaby.length>=2){
+				return
+			}else{
+				state.addbaby.push(data)
+				uni.setStorageSync("tags",state.addbaby)
+			}
+		},
+		removeBaby(state,data){//移除标签
+			state.addbaby.splice(state.addbaby.findIndex(e => e.tag === data.tag), 1)
+			uni.setStorageSync("tags",state.addbaby)
+			
 		},
 		babyItem(state,data){
 			state.babyInformat=data
