@@ -3,13 +3,14 @@
 		<custom :back="true" @click-right="add" title="接种信息列表" rightText="添加" :bg="'#fff'" :statusBarBackground="'#fff'"></custom>
 		<scroll-view class="swiper-one-list" scroll-y="true" :style="{'height':height-105+'px'}" @scrolltolower="onReachScollBottom">
 			<view class="menu" v-for="(item,index) in list" :key="index" @click="detail(item)">
-				<view class="left">
-					<view class="item">{{item.vero_name}}</view>
+				<view class="left" >
+					<view class="item">{{(item.vero||{}).title||item.vero_name}}</view>
 					<view class="item font">
 						<image src="../../../static/img/yuer.png" class="image" v-if="item.status==0"></image>
-						<text class="color">{{item.vero_name}}</text>
+						<text class="color">{{(item.vero||{}).vero_introduction||item.remark}}</text>
 					</view>
 				</view>
+				
 				<view :class="item.status==1?'okState':'state'">{{item.status==0?'未接种':item.status==1?"已接种":''}}</view>
 			</view>
 		

@@ -81,16 +81,7 @@
 					</view>
 				</uni-popup>
 				
-				<!-- <uni-popup type="center" ref="delete" zIndex="999">
-					<view class="popup-delete">
-						<view class="item-list">提示</view>
-						<view class="vontent">删除后其他亲友也将无法查看这条记录，确定继续么?</view>
-						<view class="btn">
-							<view class="ok"></view>
-							<view class="no"></view>
-						</view>
-					</view>
-				</uni-popup> -->
+			
 				<cu-modal ref="quanxian"  @cancel='modalHide'  @Confirm="modalConfirm">
 					<!-- :cancelText='cancel' :confirmText='confirmbtn' -->
 					<text slot="content">
@@ -279,7 +270,23 @@
 				 * modal确定按钮
 				 */
 				modalConfirm(){
-					console.log(this.deletedItem)
+					let obj={}
+					uni.showLoading()
+					obj.baby_id=this.deletedItem.baby_id
+					obj.weight_id = this.deletedItem.id
+					this.http("/app_baby/deleteWeight",obj).then(res=>{
+						if(res.code==1){
+							uni.redirectTo({
+								url:"/pages/index/growth_record/growth_record"
+							})
+						}else{
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
+							})
+						}
+						uni.hideLoading()
+					})
 					this.$refs.quanxian.close()
 				}
 				

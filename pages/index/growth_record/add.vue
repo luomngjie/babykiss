@@ -37,6 +37,9 @@
 				},
 				items:null,//修改信息
 				flag:true,
+				item:null,//身高体重回显数据
+				type:"",//回显类型，为echo是回显
+				url:"/app_baby/addWeight",//编辑和增加生长记录，通过判断type不同，接口不同
 				list:[
 					{
 						name:"身高",
@@ -69,6 +72,8 @@
 			if(opt.type=="upload"){
 				if(uni.getStorageSync("deletedItem")){
 					this.items = uni.getStorageSync("deletedItem")
+					this.parame.weight_id = this.items.id
+					this.parame.baby_id = this.items.baby_id
 					this.list.forEach((item,index)=>{
 						if(item.res=="head_width"){
 							item["value"] = this.items.head_width
@@ -79,12 +84,51 @@
 						}
 					})
 					if(this.items.time) this.parame.time = this.items.time
-					
+					this.url="/app_baby/updateWeight"
 				}
+			}
+			if(opt.type=="echo"){
+				this.type=opt.type;
+				this.item = JSON.parse(opt.item)
+				this.parame.weight_id = this.item.id
+				
+				this.url="/app_baby/updateWeight"
+				this.echo()
 			}
 			//console.log(this.item)
 		},
 		methods:{
+			/**
+			 * 身高体重回显
+			 */
+			echo(){
+				let obj = {}
+				if(this.item){
+					obj.baby_id = this.item.baby_id
+					obj.weight_id = this.item.id
+				}
+				
+				this.http("/app_baby/detailsWeight",obj).then(res=>{
+					if(res.code==1){
+						let data = res.data
+						
+						this.list.forEach((item,index)=>{
+							if(item.res=="head_width"){
+								item["value"] = data.head_width
+							}else if(item.res=="weight"){
+								item["value"] = data.weight
+							}else if(item.res=="height"){
+								item["value"] = data.height
+							}
+						})
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+				})
+			},
 			/**
 			 * 保存生长记录
 			 */
@@ -108,7 +152,7 @@
 				uni.showLoading({
 					title:"处理中..."
 				})
-				this.http("/app_baby/addWeight",this.parame).then(res=>{
+				this.http(this.url,this.parame).then(res=>{
 					if(res.code==1){
 						uni.redirectTo({
 							url:"/pages/index/growth_record/growth_record"
@@ -116,11 +160,10 @@
 					}else{
 						uni.showToast({
 							title:res.msg,
-							con:"none"
+							icon:"none"
 						})
 					}
 					uni.hideLoading()
-					console.log(res)
 				})
 				
 			},

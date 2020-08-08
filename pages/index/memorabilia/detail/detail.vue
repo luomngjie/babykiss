@@ -108,6 +108,7 @@
 		onLoad(opt) {
 			if(opt.item){
 				this.parame = JSON.parse(opt.item)
+				
 				this.obj.baby_id = this.parame.baby_id
 				if(this.parame.type==2){
 					this.obj.memorabilia_id=this.parame.morph_to_model.id
@@ -134,7 +135,7 @@
 					
 				}else if(this.parame.type==1){
 					uni.navigateTo({
-						url:"/pages/index/growth_record/add"
+						url:"/pages/index/growth_record/add?type="+"echo"+"&item="+JSON.stringify(this.parame.morph_to_model)
 					})
 				}
 				this.$refs["popup"].close()

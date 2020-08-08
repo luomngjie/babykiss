@@ -68,6 +68,7 @@
 		data() {
 			return {
 				backgroundImg:require('../../static/img/banner.jpg'),
+				api:"https://api.diewo.cn/index.php"
 			}
 		},
 		onLoad() {

@@ -1,10 +1,12 @@
 <script>
 export default {
 	onLaunch: function() {
-		// uni.setTabBarBadge({
-		//   index: 0,
-		//   text: '1'
-		// })
+		const token = uni.getStorageSync("userInfo")
+		if(!token){
+			uni.reLaunch({
+				url:"/pages/login/login"
+			})
+		}
 	},
 	onShow: function() {
 		uni.getSystemInfo({
@@ -14,9 +16,6 @@ export default {
 		})
 	},
 	onHide: function() {
-		
-	},
-	onLoad() {
 		
 	}
 };

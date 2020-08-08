@@ -113,9 +113,10 @@
 			 * 时间线组件触发的详情事件
 			 */
 			detail(e){
-				uni.navigateTo({
-					url:"/pages/index/memorabilia/detail/detail"
-				})
+				console.log(e)
+				// uni.navigateTo({
+				// 	url:"/pages/index/memorabilia/detail/detail"
+				// })
 			},
 			
 			

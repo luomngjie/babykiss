@@ -24,7 +24,7 @@
 				<view class="picker">
 					<picker mode="date" :value="parame.vero_time" :start="startDate" :end="endDate" @change="bindDateChange" fields="day">
 						<view class="" v-if="type!='list'">{{parame.vero_time}}</view>
-						<view class="" v-else style="color:#6DD7A9">{{upload.vero_time?upload.vero_time:age}}</view>
+						<view class="" v-else style="color:#6DD7A9">{{upload.vero_time||age}}</view>
 					</picker>
 					<image src="../../../static/img/jiantou.png" class="image"></image>
 				</view>
@@ -77,18 +77,19 @@
 					}
 				],
 				title:"添加疫苗",
-				types:"",//用于区分是否为系统疫苗或者自定义疫苗
+				types:'',//用于区分是否为系统疫苗或者自定义疫苗
 				type:'',//与接种信息公用一个也页面，用于区分显示内容
 				startDate:"",
 				endDate:'',
 				statusName:"未接种",
 				age:"2月龄请设置接种时间",
-				parame:{
+				parame:{//自定义疫苗
 					vero_time: currentDate,
 					remark:'',
 					vero_name:'',
 					status:0,
 				},
+				
 				upload:null,
 				current:0
 			};
@@ -97,15 +98,42 @@
 			if(opt.parame){
 				this.upload = JSON.parse(opt.parame)
 				this.upload.status==0?this.statusName="未接种":this.upload.status==1?this.statusName="已接种":'',
-				this.parame.remark = this.upload.remark
+				this.parame.remark = this.upload.vero?this.upload.vero.vero_introduction:this.upload.remark
 				
-				console.log(this.upload)
+				//console.log(this.upload)
 			}
 			
+			if(opt.types){
+				this.data = JSON.parse(opt.types)
+				this.types=this.data.type;
+				if(this.types=='system'){
+					this.systemse()
+				}
+			}
+			//this.details()
 			this.type=opt.type||''
-			this.types=opt.types||''
+			
 		},
 		methods:{
+			/**
+			 * @param {Object} e疫苗详情
+			 */
+			details(){
+				let obj={}
+				obj.baby_id = this.upload.baby_id
+				obj.vero_id = this.upload.id
+				
+				this.http("/app_baby/selectAddVero",obj).then(res=>{
+					if(res.code==1){
+						
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+				})
+			},
 			/**
 			 * 输入框
 			 */
@@ -119,7 +147,44 @@
 				this.current = e
 				this.statusName = item.name
 				this.parame.status = item.value
+				let obj = {}
+				if(this.upload){
+					if(this.upload.vero){
+						obj.baby_id = this.upload.baby_id
+						obj.status = this.parame.status
+						obj.vero_id = this.upload.vero.id
+						let url="/app_baby/addBabyVero"
+						this.upState(url,obj)
+						
+					}else{
+						obj.baby_id = this.upload.baby_id
+						obj.status = this.parame.status
+						obj.baby_vero_id = this.upload.id
+						let url="/app_baby/addMyBabyVero"
+						this.upState(url,obj)
+					}
+				}
+				
 				this.$refs["sex"].close()
+			},
+			/**
+			 * 更新状态
+			 */
+			upState(url,obj){
+				uni.showLoading()
+				this.http(url,obj).then(res=>{
+					if(res.code==1){
+						uni.navigateTo({
+							url:"/pages/index/Vaccination/Vaccination"
+						})
+					}else{
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+					uni.hideLoading()
+				})
 			},
 			/**
 			 * 接种状态
@@ -135,17 +200,52 @@
 			},
 			
 			/**
+			 * 系统疫苗展示
+			 */
+			systemse(){
+				let obj={
+					app_vero_id:this.data.id,
+					baby_id:uni.getStorageSync("babyItem").id
+				}
+				uni.showLoading()
+				this.http("/app_baby/selectAppVero",obj).then(res=>{
+					if(res.code==1){
+						this.parame.remark = res.data.vero_introduction
+						uni.hideLoading()
+					}else{
+						uni.hideLoading()
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+					}
+				})
+				
+			},
+			
+			/**
 			 * nav保存
 			 */
 			right(){
+				let url="",obj={}
 				uni.showLoading({
 					title:"加载中..."
 				})
 				this.parame.baby_id = uni.getStorageSync("babyItem").id
-				if(this.types=="system"){
-					this.parame.vero_id=0
-				}else if(this.types=="custom"){
-					this.parame.baby_vero_id=0
+				if(this.types=="system"){//系统疫苗
+					url="/app_baby/addBabyVero"  
+					obj.baby_id = this.parame.baby_id
+					obj.vero_id = this.data.id
+					obj.status = this.parame.status
+					obj.vero_time = this.parame.vero_time
+				}else if(this.types=="custom"){//自定义疫苗
+					url="/app_baby/addMyBabyVero"
+					obj.baby_id = this.parame.baby_id
+					obj.baby_vero_id = ''
+					obj.vero_name = this.parame.vero_name
+					obj.status = this.parame.status
+					obj.vero_time = this.parame.vero_time
+					obj.remark = this.parame.remark
 					if(!this.parame.vero_name){
 						uni.showToast({
 							title:"请填写疫苗信息",
@@ -154,8 +254,7 @@
 						return
 					}
 				}
-				
-				this.http("/app_baby/addMyBabyVero",this.parame).then(res=>{
+				this.http(url,obj).then(res=>{
 					if(res.code==1){
 						uni.redirectTo({
 							url:"/pages/index/Vaccination/Vaccination"
@@ -189,18 +288,32 @@
 			 * 模态框确认
 			 */
 			modalConfirm(){
+				let obj={}
+				obj.baby_id = this.upload.baby_id
+				
+				if(this.upload.vero){
+					uni.showToast({
+						title:"该疫苗为系统疫苗，暂无法删除!",
+						icon:"none"
+					})
+					this.$refs.quanxian.close()
+					return
+					//obj.baby_vero_id = this.upload.vero.id
+				}else{
+					obj.baby_vero_id = this.upload.id
+				}
 				uni.showLoading({
 					title:"加载中..."
 				})
-				this.http("/app_baby/babyVeroDel",{baby_id:this.upload.baby_id,baby_vero_id:this.upload.vero_id}).then(res=>{
+				this.http("/app_baby/babyVeroDel",obj).then(res=>{
 					if(res.code==1){
 						uni.showToast({
-							title:res.msg,
+							title:"删除成功",
 							icon:"none"
 						})
 						setTimeout(()=>{
 							uni.redirectTo({
-								url:"//pages/index/Vaccination/Vaccination"
+								url:"/pages/index/Vaccination/Vaccination"
 							})
 						},1200)
 					}else{
@@ -209,8 +322,9 @@
 							icon:"none"
 						})
 					}
-					uni.hideLoading()
+					
 				})
+				uni.hideLoading()
 				this.$refs.quanxian.close()
 			},
 			
@@ -220,6 +334,22 @@
 			bindDateChange(e){
 				this.parame.vero_time = e.target.value
 				this.age = e.target.value
+				if(this.upload){
+					this.upload.vero_time=e.target.value
+					let obj={},url=''
+					obj.vero_time = e.target.value
+					obj.baby_id = this.upload.baby_id
+					if(this.upload.vero){
+						obj.vero_id = this.upload.vero.id
+						 url="/app_baby/addBabyVero"
+					}else{
+						obj.baby_vero_id = this.upload.id
+						 url="/app_baby/addMyBabyVero"
+						
+					}
+					this.upState(url,obj)
+				}
+				
 			},
 			
 			getDate(type) {
@@ -244,8 +374,22 @@
 			 * 文本框信息
 			 */
 			descInput(e){
+				let obj={},url=""
 				let value = e.detail.value
 				this.parame.remark=value
+				obj.remark = value
+				if(this.upload){
+					obj.baby_id = this.upload.baby_id
+					if(!this.upload.vero){
+						obj.baby_vero_id = this.upload.id
+						 url="/app_baby/addMyBabyVero"
+					}else{
+						obj.vero_id = this.upload.vero.id
+						 url="/app_baby/addBabyVero"
+					}
+					this.upState(url,obj)
+				}
+				
 				//console.log(this.parame)
 			}
 		}
