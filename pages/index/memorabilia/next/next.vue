@@ -124,6 +124,7 @@
 				urls:"/pages/index/memorabilia/add/add?tags="+JSON.stringify(this.tags),//标签点击路径，不从回显进入
 				type:'',//是否是回显的大事记详情
 				memorabilia_id:"",//大事记主键id
+				tag_id:"",//标签id
 				tips:[]
 			};
 		},
@@ -168,9 +169,17 @@
 						res.data.data.forEach(item=>{
 							this.parame.describe = item.describe
 							if(item.file.length!=0){
+								this.imageList = item.file
+								let obj = {},imgs=[]
+								item.file.forEach(item=>{
+									obj.file=item
+								})
+								imgs.push(obj)
 								
-								this.parame.file = item.file
+								this.parame.file = JSON.stringify(imgs)
 							}
+							
+							this.parame.tag_id = item.tag_id
 							
 							this.parame.tag = item.baby_tag_one
 						})
@@ -204,13 +213,14 @@
 			 * 保存
 			 */
 			save(){
+				let url='',objs={}
 				
 				let tags = uni.getStorageSync("tags")
 				
 				let imgs=[],obj={}
 				this.parame.baby_id = uni.getStorageSync("babyItem").id
 				
-				if(this.imagesList.length!=0){
+				if(this.imagesList.length>0){
 					this.imagesList.forEach(item=>{
 						obj.file=item
 						
@@ -224,28 +234,43 @@
 					arr.push(uni.getStorageSync("tag"))
 					this.parame.tag = JSON.stringify(this.tips.concat(arr))
 				}
-				if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
-					this.http("/app_baby/addMemorabilia",this.parame).then(res=>{
-						if(res.code==1){
-							uni.redirectTo({
-								url:"/pages/index/baby_detail"
-							})
-							uni.removeStorageSync("tags")
-							uni.removeStorageSync("tag")
-						}else{
-							uni.showToast({
-								title:res.msg,
-								icon:"none"
-							})
-						}
-						
-					})
-				}else{
-					uni.showToast({
-						title:"请填写完整信息",
-						icon:"none"
-					})
+				if(this.type=="echo"){//修改大事记
+					url="/app_baby/updateMemorabilia"
+					objs.baby_id = this.parame.baby_id
+					objs.memorabilia_id = this.memorabilia_id
+					objs.describe = this.parame.describe
+					objs.file = this.parame.file
+					objs.longitude = this.parame.longitude
+					objs.latitude = this.parame.latitude
+					objs.position_name = this.parame.position_name
+					objs.date = this.parame.date
+					objs.tag_id = this.parame.tag_id
+				}else{//新增大事记
+					url="/app_baby/addMemorabilia"
+					objs=this.parame
 				}
+				// if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
+				// 	this.http(url,objs).then(res=>{
+				// 		if(res.code==1){
+				// 			uni.redirectTo({
+				// 				url:"/pages/index/baby_detail"
+				// 			})
+				// 			uni.removeStorageSync("tags")
+				// 			uni.removeStorageSync("tag")
+				// 		}else{
+				// 			uni.showToast({
+				// 				title:res.msg,
+				// 				icon:"none"
+				// 			})
+				// 		}
+						
+				// 	})
+				// }else{
+				// 	uni.showToast({
+				// 		title:"请填写完整信息",
+				// 		icon:"none"
+				// 	})
+				// }
 				
 			},
 			/**

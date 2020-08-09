@@ -24,10 +24,10 @@
 			<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" 
 			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
 			
-			<view class="background" :style="{backgroundImage:`url(${param.cover!=''?apis+'/'+param.cover:backgroundImg})`}">
-				<!--  -->
+			<view class="background" :style="{backgroundImage:`url(${babySess.head_portrait?apis+'/'+babySess.cover:backgroundImg})`}" >
+				<!-- 宝宝头像 -->
 				<view class="logo">
-					<image src="../../static/img/baby.png" class="img" @click="imgpopup"></image>
+					<image :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;" @click="imgpopup"></image>
 					<view class="right" @tap.click="babyInfor">
 						<view class="name">{{param.name}}</view>
 						<view class="name">刚出生<image src="../../static/img/ready.png" class="ready"></image></view>
@@ -66,11 +66,12 @@
 					<view class="line"/>
 					<view class="item-list" @tap.click="babyInfor">宝宝信息</view>
 					<view class="line"/>
-					<view class="item-list">设置头像</view>
+					<view class="item-list" @tap.click="setLogo('logo')">设置头像</view>
 					<view class="line"/>
-					<view class="item-list">设置封面</view>
+					<view class="item-list" @tap.click="setLogo('cover')">设置封面</view>
 				</view>
 			</uni-popup>
+			
 			
 			</scroll-view>
 			<view class="hide" v-if="isShows" @tap.stop="close" >
@@ -176,6 +177,8 @@
 				},
 				show:true,//全局等待动画
 				status: 'more',
+				babySess:{},
+				system:require("../../static/img/baby.png"),
 				param:{},//宝宝详情信息
 				api:"https://api.diewo.cn/index.php"//图片上传
 				
@@ -190,6 +193,87 @@
 			
 		},
 		methods: {
+			/**
+			 * 获取宝宝信息
+			 */
+			dayBaby(){
+				this.http("/app_baby/babyList",{baby_id:uni.getStorageSync("babyItem").id}).then(res=>{
+					if(res.code==1){
+						this.babySess=res.data.data[0]
+					}
+					
+				})
+			},
+			/**
+			 * 设置头像
+			 * 
+			 */
+			setLogo(type){
+				let self=this
+				uni.chooseImage({
+				    success: function (res) {
+						//JSON.stringify(res.tempFilePaths)
+						
+				        uni.showLoading({
+				        	title:"图片上传中"
+				        })
+				        uni.uploadFile({
+				        	url:self.api+'/file_upload/upload',
+				        	fileType:'image',
+				        	filePath:res.tempFilePaths[0],
+				        	sizeType: ['compressed'],  
+				        	name:'file',  
+				        	formData:{
+				        		token:uni.getStorageSync('userInfo').token
+				        	},
+				        	success: (uploadFileRes) => {
+				        		let obj = JSON.parse(uploadFileRes.data);
+				        		if(obj.code==1){
+									let objs={}
+									if(type=='logo'){
+										 objs={
+											baby_id:uni.getStorageSync("babyItem").id,
+											head_portrait:obj.data.str_url
+										}
+									}else{
+										 objs={
+											 baby_id:uni.getStorageSync("babyItem").id,
+											cover:obj.data.str_url
+										}
+									}
+									
+									//self.babyImg.logo = self.apis+
+									self.http("/app_baby/updateBaby",objs).then(res=>{
+										if(res.code==1){
+											uni.redirectTo({
+												url:"/pages/index/baby_detail"
+											})
+										}else{
+											uni.showToast({
+												title:res.msg,
+												icon:"none"
+											})
+										}
+										
+									})
+				        		}
+				        		
+				        	},
+				        	fail:(error)=>{
+				        		uni.showToast({
+				        			title:"图片上传失败",
+				        			icon:"none"
+				        		})
+				        	}
+				        })
+				        uni.hideLoading({
+				        	title:"图片上完毕"
+				        })
+						self.$refs["operation"].close()
+						//返回结果
+				    }
+				})
+			},
 			/**
 			 * @param {Object} e底部动画跳转
 			 */
@@ -434,6 +518,7 @@
 			this.param = uni.getStorageSync("babyItem")
 			this.height=this.$store.state.system.screenHeight
 			this.appBabyLogList()
+			this.dayBaby()
 			//console.log(this)
 		},
 		

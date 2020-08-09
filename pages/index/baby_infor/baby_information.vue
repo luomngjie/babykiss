@@ -15,7 +15,7 @@
 		
 		<view class="background" @click="imgpopup(0)" style="z-index: 0;" :style="{backgroundImage:`url(${parame.cover!=''?apis+'/'+parame.cover:backgroundImg})`}">
 			<view class="logo" style="z-index: 1000;" @click="imgpopup(1)">
-				<image src="../../../static/img/baby.png" class="img"  ></image>
+				<image :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;"></image>
 				<view class="right">
 					<view class="name">第{{days.day}}天</view>
 					
@@ -162,7 +162,9 @@
 				current:0,
 				background:'#FFC227',
 				titleCen:"",
+				system:require("../../../static/img/baby.png"),
 				days:{},//宝宝天数
+				babySess:{},//宝宝信息
 				apis:"https://api.diewo.cn/",
 				api:"https://api.diewo.cn/index.php"//图片上传
 				
@@ -179,6 +181,8 @@
 			dayBaby(){
 				this.http("/app_baby/babyList",{baby_id:this.parame.id}).then(res=>{
 					if(res.code==1){
+						this.babySess=res.data.data[0]
+						console.log(this.babySess)
 						this.days = res.data.data[0]
 					}
 					

@@ -33,7 +33,7 @@
 		
 		<view class="contenttext">
 			<view class="title">疫苗简介</view>
-			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.remark" placeholder-style="font-size:26upx; "/>
+			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.remark" placeholder-style="font-size:26upx; " :disabled="upload.vero?true:false"/>
 		</view>
 		
 		
@@ -100,12 +100,12 @@
 				this.upload.status==0?this.statusName="未接种":this.upload.status==1?this.statusName="已接种":'',
 				this.parame.remark = this.upload.vero?this.upload.vero.vero_introduction:this.upload.remark
 				
-				//console.log(this.upload)
 			}
 			
 			if(opt.types){
 				this.data = JSON.parse(opt.types)
 				this.types=this.data.type;
+				
 				if(this.types=='system'){
 					this.systemse()
 				}
@@ -149,18 +149,17 @@
 				this.parame.status = item.value
 				let obj = {}
 				if(this.upload){
-					if(this.upload.vero){
-						obj.baby_id = this.upload.baby_id
-						obj.status = this.parame.status
-						obj.vero_id = this.upload.vero.id
-						let url="/app_baby/addBabyVero"
-						this.upState(url,obj)
-						
-					}else{
+					if(this.upload.id){
 						obj.baby_id = this.upload.baby_id
 						obj.status = this.parame.status
 						obj.baby_vero_id = this.upload.id
 						let url="/app_baby/addMyBabyVero"
+						this.upState(url,obj)
+					}else{
+						obj.baby_id = this.upload.baby_id
+						obj.status = this.parame.status
+						obj.vero_id = this.upload.vero.id
+						let url="/app_baby/addBabyVero"
 						this.upState(url,obj)
 					}
 				}
@@ -339,7 +338,7 @@
 					let obj={},url=''
 					obj.vero_time = e.target.value
 					obj.baby_id = this.upload.baby_id
-					if(this.upload.vero){
+					if(!this.upload.id){
 						obj.vero_id = this.upload.vero.id
 						 url="/app_baby/addBabyVero"
 					}else{
@@ -380,7 +379,7 @@
 				obj.remark = value
 				if(this.upload){
 					obj.baby_id = this.upload.baby_id
-					if(!this.upload.vero){
+					if(this.upload.id){
 						obj.baby_vero_id = this.upload.id
 						 url="/app_baby/addMyBabyVero"
 					}else{
