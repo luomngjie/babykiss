@@ -129,7 +129,15 @@
 			};
 		},
 		onLoad(opt) {
+			if(opt.type=="echo"){
+				this.type = opt.type
+				this.memorabilia_id = opt.memorabilia_id
+				this.echo(opt.memorabilia_id)
+			}
 			
+			this.height=this.$store.state.system.screenHeight
+		},
+		onShow() {
 			if(uni.getStorageSync("tag")){
 				this.tags=uni.getStorageSync("tag")
 				let arr = []
@@ -146,14 +154,6 @@
 				this.imageList.push(this.apis+uni.getStorageSync('img'))
 				this.imagesList.push(uni.getStorageSync('img'))
 			}
-			
-			if(opt.type=="echo"){
-				this.type = opt.type
-				this.memorabilia_id = opt.memorabilia_id
-				this.echo(opt.memorabilia_id)
-			}
-			
-			this.height=this.$store.state.system.screenHeight
 		},
 		methods:{
 			/**
@@ -178,10 +178,17 @@
 								
 								this.parame.file = JSON.stringify(imgs)
 							}
-							
 							this.parame.tag_id = item.tag_id
+							if(item.baby_tag_one.length>0){
+								let app = item.baby_tag_one.filter(item=>item.is_one==1)
+								let apps = item.baby_tag_one.filter(item=>item.is_one==0)
+								this.parame.tag = apps
+								this.tips = apps
+								if(this.parame.tag[0]) this.tags = app[0]
+								
+							}
 							
-							this.parame.tag = item.baby_tag_one
+							
 						})
 						
 						
@@ -215,7 +222,7 @@
 			save(){
 				let url='',objs={}
 				
-				let tags = uni.getStorageSync("tags")
+				this.tips = uni.getStorageSync("tags")
 				
 				let imgs=[],obj={}
 				this.parame.baby_id = uni.getStorageSync("babyItem").id
@@ -249,35 +256,36 @@
 					url="/app_baby/addMemorabilia"
 					objs=this.parame
 				}
-				// if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
-				// 	this.http(url,objs).then(res=>{
-				// 		if(res.code==1){
-				// 			uni.redirectTo({
-				// 				url:"/pages/index/baby_detail"
-				// 			})
-				// 			uni.removeStorageSync("tags")
-				// 			uni.removeStorageSync("tag")
-				// 		}else{
-				// 			uni.showToast({
-				// 				title:res.msg,
-				// 				icon:"none"
-				// 			})
-				// 		}
+				if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
+					this.http(url,objs).then(res=>{
+						if(res.code==1){
+							uni.redirectTo({
+								url:"/pages/index/baby_detail"
+							})
+							uni.removeStorageSync("tags")
+							uni.removeStorageSync("tag")
+						}else{
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
+							})
+						}
 						
-				// 	})
-				// }else{
-				// 	uni.showToast({
-				// 		title:"请填写完整信息",
-				// 		icon:"none"
-				// 	})
-				// }
+					})
+				}else{
+					uni.showToast({
+						title:"请填写完整信息",
+						icon:"none"
+					})
+				}
 				
 			},
 			/**
 			 * 取消
 			 */
 			cancal(){
-				if(this.imageList.length>0){
+				
+				if(uni.removeStorageSync("tag")||uni.removeStorageSync("tags")){
 					uni.showModal({
 						title:"提示",
 						content:"宝宝新动态还未发送，是否需要放弃?",
@@ -287,6 +295,8 @@
 								uni.redirectTo({
 									url:"/pages/index/baby_detail"
 								})
+								uni.removeStorageSync("tags")
+								uni.removeStorageSync("tag")
 							} else if (res.cancel) {
 								console.log('用户点击取消');
 							}
@@ -415,12 +425,15 @@
 			 */
 			removes(data){
 				let tags = uni.getStorageSync("tags")
-				let obj = tags.splice(tags.findIndex(e => e.tag === data.tag), 1)
-				this.$store.commit("removeBaby",tags)
-				this.tips = tags
-				if(tags.length<=0){
-					uni.removeStorageSync("tags")
+				if(tags){
+					let obj = tags.splice(tags.findIndex(e => e.tag === data.tag), 1)
+					this.$store.commit("removeBaby",tags)
+					this.tips = tags
+					if(tags.length<=0){
+						uni.removeStorageSync("tags")
+					}
 				}
+				
 				
 			},
 			

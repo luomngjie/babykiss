@@ -68,6 +68,37 @@
 					</view>
 				</view>
 			</view>
+			
+			<view class="tlak_o"  v-if="morabilia">
+				<view class="date">
+					<view class="day" v-if="morabilia.date">{{morabilia.date}}</view>
+					<view class="dayNumber">第{{morabilia.day}}天</view>
+				</view>
+				
+				<image :src="morabilia.file[0]?morabilia.file[0]:backgroundImg" class="menu-image" ></image>
+				
+				<view class="date">
+					<view class="dayNumber" v-if="morabilia.describe">{{morabilia.describe}}</view>
+				</view>
+				
+				<view class="first" v-if="morabilia.baby_tag_one.length>0">
+					<view class="list" @click="firstFun" v-for="(items,index) in morabilia.baby_tag_one">{{items.tag}}</view>
+				</view>
+				
+				
+				<view class="tabbar">
+					<view class="name">
+						<text>爸爸,1小时前</text>
+					</view>
+					<image src="../../../../static/img/mess.png" class="image"></image>
+				</view>
+				
+				<view class="tabbar">
+					<view class="name">
+						<text>爸爸被萌化了</text>
+					</view>
+				</view>
+			</view>
 		</scroll-view>
 		
 		<uni-popup type="center" ref="popup" zIndex="999">
@@ -102,6 +133,7 @@
 				backgroundImg:require('../../../../static/img/banner.jpg'),
 				data:null,//展示的数据
 				weight:null,//体重详情
+				morabilia:null,//宝宝大事记点击时间线进入的大事记详情
 				obj:{}//详情请求参数
 			};
 		},
@@ -116,6 +148,8 @@
 				}else if(this.parame.type==1){
 					this.obj.weight_id=this.parame.morph_to_model.id
 					this.detailsWeight()
+				}else{
+					this.morabilia = this.parame
 				}
 				
 			}
@@ -136,6 +170,10 @@
 				}else if(this.parame.type==1){
 					uni.navigateTo({
 						url:"/pages/index/growth_record/add?type="+"echo"+"&item="+JSON.stringify(this.parame.morph_to_model)
+					})
+				}else{
+					uni.navigateTo({
+						url:"/pages/index/memorabilia/next/next?type="+"echo"+"&memorabilia_id="+this.parame.id
 					})
 				}
 				this.$refs["popup"].close()
@@ -246,6 +284,13 @@
 					let obj={
 						baby_id:this.obj.baby_id,
 						weight_id:this.parame.morph_to_model.id
+					}
+					this.del(url,obj)
+				}else{
+					let url="/app_baby/babyMemorabiliaDel";
+					let obj={
+						baby_id:this.obj.baby_id,
+						memorabilia_id:this.parame.id
 					}
 					this.del(url,obj)
 				}

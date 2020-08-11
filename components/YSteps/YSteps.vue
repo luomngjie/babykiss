@@ -6,7 +6,7 @@
 				
 				<view class="set-2" v-for="(item,index) in talk" :key="index">
 					<!-- <view class="quan" ></view> -->
-					<view style="font-size: 32upx;">{{item.MMDD}}<text style="font-size: 20upx;margin-left: 10upx;color:black;">第{{item.diff_day}}天</text></view>
+					<view style="font-size: 32upx;">{{item.MMDD}}<text style="font-size: 20upx;margin-left: 10upx;color:black;">第{{item.day}}天</text></view>
 					<template v-if="type=='index'">
 						<view class="tlak_o" @click="detail(item)">
 							<!-- v-for="(cItem,index_) in item.data" -->

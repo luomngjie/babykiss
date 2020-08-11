@@ -3,7 +3,7 @@
 		<custom :back="true" :title="title"  rightText="添加" @click-right="add" :bg="'#fff'" :statusBarBackground="'#fff'"></custom>
 		<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
 			<view class="nav" v-if="tips.length>0">
-				<view class="list" v-for="(item,index) in tips" :key="index">{{item.name}}</view>
+				<view class="list" v-for="(item,index) in tips" :key="index">{{item.tag}}</view>
 			</view>
 			
 			<ysteps :talk="talk" :type="type" @fun="detail"></ysteps>
@@ -113,10 +113,12 @@
 			 * 时间线组件触发的详情事件
 			 */
 			detail(e){
-				console.log(e)
-				// uni.navigateTo({
-				// 	url:"/pages/index/memorabilia/detail/detail"
-				// })
+				
+				e.type==3
+				
+				uni.navigateTo({
+					url:"/pages/index/memorabilia/detail/detail?item="+JSON.stringify(e)
+				})
 			},
 			
 			

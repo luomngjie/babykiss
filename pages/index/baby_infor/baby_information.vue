@@ -182,8 +182,9 @@
 				this.http("/app_baby/babyList",{baby_id:this.parame.id}).then(res=>{
 					if(res.code==1){
 						this.babySess=res.data.data[0]
-						console.log(this.babySess)
-						this.days = res.data.data[0]
+						if(this.babySess.day){
+							this.days = res.data.data[0]
+						}
 					}
 					
 				})
