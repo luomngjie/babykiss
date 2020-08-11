@@ -33,7 +33,8 @@
 		
 		<view class="contenttext">
 			<view class="title">疫苗简介</view>
-			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.remark" placeholder-style="font-size:26upx; " :disabled="upload.vero?true:false"/>
+			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.remark" placeholder-style="font-size:26upx; " :disabled="upload.vero?true:false" v-if="upload"/>
+			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.remark" placeholder-style="font-size:26upx; " :disabled="true" v-else/>
 		</view>
 		
 		
@@ -89,7 +90,7 @@
 					vero_name:'',
 					status:0,
 				},
-				
+				data:null,
 				upload:null,
 				current:0
 			};
@@ -97,8 +98,11 @@
 		onLoad(opt) {
 			if(opt.parame){
 				this.upload = JSON.parse(opt.parame)
-				this.upload.status==0?this.statusName="未接种":this.upload.status==1?this.statusName="已接种":'',
-				this.parame.remark = this.upload.vero?this.upload.vero.vero_introduction:this.upload.remark
+				this.upload.status==0?this.statusName="未接种":this.upload.status==1?this.statusName="已接种":'';
+				if(this.upload.vero){
+					this.parame.remark = this.upload.vero?this.upload.vero.vero_introduction:this.upload.remark
+				}
+				
 				
 			}
 			

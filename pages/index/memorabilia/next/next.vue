@@ -98,7 +98,7 @@
 				parame:{//大事记上传参数
 					date: currentDate,
 					describe:'',
-					position_name:"重庆",
+					position_name:'重庆',
 					longitude:"106.55",
 					latitude:"29.57",
 					tag:[]
@@ -128,6 +128,10 @@
 				tips:[]
 			};
 		},
+		onBackPress(e) {
+			this.cancal()
+			return true
+		},
 		onLoad(opt) {
 			if(opt.type=="echo"){
 				this.type = opt.type
@@ -135,9 +139,19 @@
 				this.echo(opt.memorabilia_id)
 			}
 			
-			this.height=this.$store.state.system.screenHeight
-		},
-		onShow() {
+			if(uni.getStorageSync('img')){
+				this.imageList.push(this.apis+uni.getStorageSync('img'))
+				this.imagesList.push(uni.getStorageSync('img'))
+			}
+			
+			if(uni.getStorageSync('address')){
+				let lonLat = uni.getStorageSync('address').location.split(",")
+				this.parame.position_name = uni.getStorageSync('address').name
+				this.parame.longitude = lonLat[0]
+				this.parame.latitude=lonLat[1]
+				
+			}
+			
 			if(uni.getStorageSync("tag")){
 				this.tags=uni.getStorageSync("tag")
 				let arr = []
@@ -150,10 +164,12 @@
 				
 			}
 			
-			if(uni.getStorageSync('img')){
-				this.imageList.push(this.apis+uni.getStorageSync('img'))
-				this.imagesList.push(uni.getStorageSync('img'))
-			}
+			this.height=this.$store.state.system.screenHeight
+		},
+		onShow() {
+			
+			
+			
 		},
 		methods:{
 			/**
@@ -178,14 +194,17 @@
 								
 								this.parame.file = JSON.stringify(imgs)
 							}
+							this.parame.position_name = item.position_name
+							this.parame.longitude = item.longitude
+							this.parame.latitude = item.latitude
 							this.parame.tag_id = item.tag_id
 							if(item.baby_tag_one.length>0){
+								
 								let app = item.baby_tag_one.filter(item=>item.is_one==1)
 								let apps = item.baby_tag_one.filter(item=>item.is_one==0)
 								this.parame.tag = apps
 								this.tips = apps
-								if(this.parame.tag[0]) this.tags = app[0]
-								
+								this.tags = app[0]
 							}
 							
 							
@@ -256,12 +275,13 @@
 					url="/app_baby/addMemorabilia"
 					objs=this.parame
 				}
-				if(this.parame.file&&this.parame.baby_id&&this.parame.tag&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
+				if(this.parame.file&&this.parame.baby_id&&this.parame.tag.length>0&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
 					this.http(url,objs).then(res=>{
 						if(res.code==1){
 							uni.redirectTo({
 								url:"/pages/index/baby_detail"
 							})
+							uni.removeStorageSync("address")
 							uni.removeStorageSync("tags")
 							uni.removeStorageSync("tag")
 						}else{
@@ -277,6 +297,7 @@
 						title:"请填写完整信息",
 						icon:"none"
 					})
+					
 				}
 				
 			},
@@ -285,12 +306,14 @@
 			 */
 			cancal(){
 				
-				if(uni.removeStorageSync("tag")||uni.removeStorageSync("tags")){
+				if(this.parame.date){
+					
 					uni.showModal({
 						title:"提示",
 						content:"宝宝新动态还未发送，是否需要放弃?",
 						mask:true,
 						success:res=>{
+							
 							if (res.confirm) {
 								uni.redirectTo({
 									url:"/pages/index/baby_detail"

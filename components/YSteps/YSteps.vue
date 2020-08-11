@@ -36,7 +36,11 @@
 					<template v-if="type=='note'">
 						<view class="note" @click="detail(item)" v-if="item.describe">
 							<view class="tip">第一次{{item.baby_tag_one[0].tag}}</view>
-							<view class="tip con">{{item.describe}}</view>
+							<view class="tip con">
+								<image :src="item.file[0]" style="width: 100%;height:100%;" v-if="item.file.length>0"></image>
+								<text v-else>{{item.describe}}</text>
+								
+							</view>
 						</view>
 						<view class="note" @click="upload" v-else>
 							<view class="tip">第一次{{item.tag}}</view>

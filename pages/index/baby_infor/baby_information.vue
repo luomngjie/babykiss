@@ -4,7 +4,7 @@
 		<custom  :back="true" leftText="宝宝"
 			class="custom" @click-left="left" color="#fff"
 			:title="titleCen" 
-			:statusBarBackground="'#FFC227'">
+			>
 			<view slot="right" >
 				<view class="photo-item" @click="operation">
 					<image src="../../../static/img/more.png" class="pahoto"></image>
@@ -13,8 +13,9 @@
 			</view>
 		</custom>
 		
-		<view class="background" @click="imgpopup(0)" style="z-index: 0;" :style="{backgroundImage:`url(${parame.cover!=''?apis+'/'+parame.cover:backgroundImg})`}">
-			<view class="logo" style="z-index: 1000;" @click="imgpopup(1)">
+		<view class="background"  style="z-index: 0;" >
+			<image class="background" :src="babySess.cover!=''?apis+'/'+babySess.cover:backgroundImg" @click="setCover"></image>
+			<view class="logo" style="z-index: 1000;" @click="imgpopup">
 				<image :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;"></image>
 				<view class="right">
 					<view class="name">第{{days.day}}天</view>
@@ -377,8 +378,9 @@
 											icon:"none"
 										})
 									}
+									uni.hideLoading()
 								})
-								uni.hideLoading()
+								
 								self.$refs["popup"].close()
 							} else if (res.cancel) {
 								self.$refs["popup"].close()
@@ -395,12 +397,18 @@
 				this.$refs["popup"].close()
 			},
 			
-			
-			
+			/**
+			 * 设置背景封面
+			 */
+			setCover(){
+				this.tips = "设置封面"
+				this.$refs["operation"].open()
+			},
 			/**
 			 * @param {Object} 首页头像事件
 			 */
-			imgpopup(index){
+			imgpopup(){
+				this.tips = "设置头像"
 				this.$refs["operation"].open()
 			},
 			
@@ -422,8 +430,8 @@
 				uni.chooseImage({
 				    count: 6, //可以选择图片的张数
 				    sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-				    sourceType:index==2?['camera']:['album'], //从相册选择  默认是两个都有
-				    success: function (res) {
+				    sourceType:index==2?['album']:['camera'], //从相册选择  默认是两个都有
+				    success: function (res) { 
 						uni.showLoading({
 							title:"图片上传中"
 						})
@@ -437,36 +445,36 @@
 								token:uni.getStorageSync('userInfo').token
 							},
 							success: (uploadFileRes) => {
-								let objs = JSON.parse(uploadFileRes.data);
 								
+								let objs = JSON.parse(uploadFileRes.data);
 								if(objs.code==1){
-									self.parame.cover=objs.data.str_url
-									let obj = {}
-									obj.baby_id = self.parame.id
-									obj.head_portrait = self.parame.head_portrait
-									obj.cover = self.parame.cover
-									obj.name = self.parame.name
-									obj.sex = self.parame.sex
-									obj.type = self.parame.type
-									obj.status = self.parame.status
-									obj.due_date = self.parame.due_date
-									obj.birth_date = self.parame.birth_date
-									obj.birth_moment = self.parame.birth_moment
-									obj.weight = self.parame.weight
-									obj.blood_type = self.parame.blood_type
+									let obj = {};
+									if(self.tips=="设置封面"){
+										obj={
+											baby_id:uni.getStorageSync("babyItem").id,
+											cover:objs.data.str_url
+										}
+										self.babySess.cover = objs.data.str_url
+										
+									}else{
+										obj={
+											baby_id:uni.getStorageSync("babyItem").id,
+											head_portrait:objs.data.str_url
+										}
+										self.babySess.head_portrait = objs.data.str_url
+									}
 									
 									self.http("/app_baby/updateBaby",obj).then(res=>{
 										if(res.code==1){
+											
 											uni.showToast({
 												title:"修改成功",
 												icon:"none"
 											})
-											self.$store.commit("babyItem",self.parame)
-											// setTimeout(()=>{
-											// 	uni.redirectTo({
-											// 		url:"/pages/index/baby_infor/baby_information"
-											// 	})
-											// },1200)
+											
+											
+											self.$store.commit("babyItem",self.babySess)
+											
 										}else{
 											uni.showToast({
 												title:res.msg,
@@ -474,8 +482,10 @@
 											})
 										}
 									})
-									
 								}
+								
+								
+								
 								
 							},
 							fail:(error)=>{

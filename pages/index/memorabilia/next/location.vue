@@ -31,7 +31,7 @@
 					暂无法获取位置信息
 				</view>
 			</scroll-view>
-			
+			 
 		</view>
 	</view>
 </template>
@@ -45,14 +45,14 @@
 				addressName: '', 
 				amapPlugin: null, 
 				img:require("../../../../static/img/gou.png"),
-				current:0,
+				current:1,
 				cur:0,//地图位置选择，右侧打勾
 				height:0,
 				tab:[
 					{
 						name:"拍摄位置",
 						id:0
-					},
+					}, 
 					{
 						name:"当前位置",
 						id:1
@@ -70,6 +70,11 @@
 		},
 		onLoad() {
 			this.height=this.$store.state.system.screenHeight
+			if(this.current==1){
+				// #ifdef APP-PLUS
+					this.getLocation()
+				// #endif
+			}
 			//this.loadCity()
 		},
 		methods:{
@@ -91,7 +96,11 @@
 			 */
 			checkAddress(item,index){
 				this.cur=index
-				console.log(item)
+				uni.setStorageSync("address",item)
+				let addre = item.location.split(",")
+				uni.redirectTo({
+					url:"/pages/index/memorabilia/next/next"
+				})
 			},
 			/**
 			 * @param {Object} opt

@@ -32,7 +32,7 @@
 			this.phone=opt.tel
 			this.pwd=opt.pwd
 			this.height=this.$store.state.system.screenHeight
-			this.wchart=JSON.parse(opt.parame)
+			if(opt.parame) this.wchart=JSON.parse(opt.parame)
 			this.getCode()
 		},
 		methods:{

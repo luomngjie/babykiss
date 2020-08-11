@@ -31,7 +31,7 @@
 				
 				<view class="tabbar">
 					<view class="name">
-						<text>爸爸,1小时前</text>
+						<text>爸爸,{{item.date}}</text>
 					</view>
 					<image src="../../../../static/img/mess.png" class="image"></image>
 				</view>
@@ -57,7 +57,7 @@
 				
 				<view class="tabbar">
 					<view class="name">
-						<text>爸爸,1小时前</text>
+						<text>爸爸,{{weight.time}}</text>
 					</view>
 					<image src="../../../../static/img/mess.png" class="image"></image>
 				</view>
@@ -88,7 +88,7 @@
 				
 				<view class="tabbar">
 					<view class="name">
-						<text>爸爸,1小时前</text>
+						<text>爸爸,{{morabilia.date}}</text>
 					</view>
 					<image src="../../../../static/img/mess.png" class="image"></image>
 				</view>

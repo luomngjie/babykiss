@@ -4,7 +4,7 @@ export default {
 		const token = uni.getStorageSync("userInfo")
 		if(!token){
 			uni.reLaunch({
-				url:"/pages/login/login"
+				url:"/pages/login/login?type=1"
 			})
 		}
 	},

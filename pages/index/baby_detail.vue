@@ -24,11 +24,12 @@
 			<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" 
 			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
 			
-			<view class="background" :style="{backgroundImage:`url(${babySess.head_portrait?apis+'/'+babySess.cover:backgroundImg})`}" >
+			<view class="background"  >
+				<image :src="babySess.cover?apis+'/'+babySess.cover:backgroundImg" class="background" @click="clickCover"></image>
 				<!-- 宝宝头像 -->
 				<view class="logo">
 					<image :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;" @click="imgpopup"></image>
-					<view class="right" @tap.click="babyInfor">
+					<view class="right" @tap.click="clickLogo">
 						<view class="name">{{param.name}}</view>
 						<view class="name">刚出生<image src="../../static/img/ready.png" class="ready"></image></view>
 					</view>
@@ -194,6 +195,14 @@
 		},
 		methods: {
 			/**
+			 * 背景图点击事件
+			 */
+			clickCover(){
+				uni.navigateTo({
+					url:"/pages/index/baby_infor/baby_information"
+				})
+			},
+			/**
 			 * 获取宝宝信息
 			 */
 			dayBaby(){
@@ -203,6 +212,12 @@
 					}
 					
 				})
+			},
+			/**
+			 * @param {Object}设置头像点击弹窗
+			 */
+			clickLogo(){
+				this.$refs["operation"].open()
 			},
 			/**
 			 * 设置头像
@@ -245,9 +260,10 @@
 									//self.babyImg.logo = self.apis+
 									self.http("/app_baby/updateBaby",objs).then(res=>{
 										if(res.code==1){
-											uni.redirectTo({
+											uni.navigateTo({
 												url:"/pages/index/baby_detail"
 											})
+											
 										}else{
 											uni.showToast({
 												title:res.msg,
