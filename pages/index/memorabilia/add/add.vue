@@ -84,11 +84,9 @@
 					url:this.type?"/pages/index/memorabilia/next/next?type="+this.type+"&memorabilia_id="+this.memorabilia_id:"/pages/index/memorabilia/next/next",
 					success:()=>{
 						if(this.custom==1){
-							uni.setStorageSync("tag",this.tag)
+							 this.$store.commit("firstAdd",this.tag)
 						}else{
 							this.$store.commit("addbaby",this.tag)
-							//console.log(arr)
-							//uni.setStorageSync("tags",this.tag)
 						}
 						
 					}

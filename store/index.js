@@ -8,6 +8,8 @@ const store = new Vuex.Store({
 		number:1,
 		system:{},
 		addbaby:[],
+		tag:null,//第一次标签
+		tags:null,//自定义标签
 		babyInformat:{}//修改宝宝信息
 	},
 	getters: {
@@ -27,7 +29,13 @@ const store = new Vuex.Store({
 			}else{
 				state.addbaby.push(data)
 				uni.setStorageSync("tags",state.addbaby)
+				state.tags = uni.getStorageSync("tags")
 			}
+		},
+		firstAdd(state,data){//添加第一次标签
+			uni.setStorageSync("tag",data)
+		
+			state.tag = uni.getStorageSync("tag")
 		},
 		removeBaby(state,data){//移除标签
 			state.addbaby.splice(state.addbaby.findIndex(e => e.tag === data.tag), 1)

@@ -24,20 +24,6 @@ const http = (url, data, method = 'POST', isloading = false) => {
 			method: method,
 			success: function(res) {
 				resolve(res.data)
-				// if(token){
-					
-				// }else{
-				// 	uni.showToast({
-				// 		title:"请先登录!!!",
-				// 		icon:"none"
-				// 	})
-				// 	setTimeout(()=>{
-				// 		uni.reLaunch({
-				// 			url:"/pages/login/login?type=1"
-				// 		})
-				// 	},1200)
-				// }
-				
 			},
 			fail: function(e) {
 				reject(e)

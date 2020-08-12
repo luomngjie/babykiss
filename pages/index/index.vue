@@ -150,7 +150,7 @@
 				babyList:[],//宝宝数组
 				page:{
 					page:1,//当前页数
-					num:5,//当前条数
+					num:10,//当前条数
 					total:''//数据总数
 				},
 				show:true,//全局等待动画
@@ -160,9 +160,7 @@
 				
 			}
 		},
-		onShow() {
-			
-		},
+
 		onReachBottom() {
 			if(this.isShowBaby!="addbaby"){
 				if(this.status == 'noMore'){
@@ -366,9 +364,7 @@
 			},
 			babyLists(){
 				this.status = 'loading'
-				// uni.showLoading({
-				// 	title:"加载中..."
-				// })
+				uni.showLoading()
 				this.http("/app_baby/babyList",{
 					page:this.page.page,
 					num:this.page.num
@@ -388,22 +384,21 @@
 						}else{
 							this.flage = true
 						}
-						//uni.hideLoading()
 					}else{
 						uni.showToast({
 							title:res.msg,
 							icon:"none"
 						})
 					}
-					
+					uni.hideLoading()
 				})
 			}
 		},
 		onLoad(opt) {
 			this.height=this.$store.state.system.screenHeight
-			uni.startPullDownRefresh();
+			
 			this.isShowBaby=opt.type||''
-			//this.babyLists()
+			this.babyLists()
 			
 				
 		},
@@ -413,21 +408,16 @@
 		  // 页面关闭后清空数据
 		},
 		
-		mounted() {
-			
-			
-			
-		},
 		
 		/**
 		 * 下拉刷新
 		 */
 		onPullDownRefresh(){
-			this.refresh()
-			setTimeout(()=>{
-				 uni.stopPullDownRefresh();
+			// this.refresh()
+			// setTimeout(()=>{
+			// 	 uni.stopPullDownRefresh();
 				 
-			},2000)
+			// },2000)
 		},
 		
 		/**

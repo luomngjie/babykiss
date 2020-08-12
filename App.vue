@@ -1,12 +1,7 @@
 <script>
 export default {
 	onLaunch: function() {
-		const token = uni.getStorageSync("userInfo")
-		if(!token){
-			uni.reLaunch({
-				url:"/pages/login/login?type=1"
-			})
-		}
+		
 	},
 	onShow: function() {
 		uni.getSystemInfo({

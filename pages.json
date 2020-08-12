@@ -3,8 +3,8 @@
 		{//亲宝宝
 			"path":"pages/index/index",
 			"style":{
-				"navigationStyle": "custom",
-				"enablePullDownRefresh":true
+				"navigationStyle": "custom"
+				// "enablePullDownRefresh":true
 				// "app-plus":{
 				// 	"scrollIndicator":"none"
 				// }

@@ -21,8 +21,8 @@
 		
 		<view class="lists">
 			<view class="nav">
-				<view class="list" v-if="tags" v-model="tags">
-					<text @click="tipsFun(2)">{{tags.tag}}</text>
+				<view class="list" v-if="this.$store.state.tag" v-model="tags">
+					<text @click="tipsFun(2)">{{this.$store.state.tag.tag}}</text>
 					<image src="../../../../static/img/cheng.png" class="img" @click="remove(2)"></image>
 				</view>
 				<view class="list" v-else>
@@ -47,17 +47,7 @@
 				</view>
 				
 			</view>
-			<!-- <view class="line"></view>
-			<view class="vacName" @click="see">
-				<view class="name" >
-					<image src="../../../../static/img/time.png" class="image"></image>
-					<text>谁可以看</text>
-				</view>
-				<view class="state">
-					<text>所有亲</text>
-					<image src="../../../../static/img/jiantou.png" class="image"></image>
-				</view>
-			</view> -->
+			
 			<view class="line"></view>
 			<view class="vacName" @click="hrefFun">
 				<view class="name">
@@ -103,7 +93,7 @@
 					latitude:"29.57",
 					tag:[]
 				},
-				tags:null,
+				
 				startDate:"",
 				endDate:'',
 				imageList: [],//上传图片
@@ -124,8 +114,9 @@
 				urls:"/pages/index/memorabilia/add/add?tags="+JSON.stringify(this.tags),//标签点击路径，不从回显进入
 				type:'',//是否是回显的大事记详情
 				memorabilia_id:"",//大事记主键id
-				tag_id:"",//标签id
-				tips:[]
+				tag_id:"",//标签id回显用
+				tips:[],
+				tags:null//第一次标签
 			};
 		},
 		onBackPress(e) {
@@ -137,40 +128,31 @@
 				this.type = opt.type
 				this.memorabilia_id = opt.memorabilia_id
 				this.echo(opt.memorabilia_id)
-			}
-			
-			if(uni.getStorageSync('img')){
-				this.imageList.push(this.apis+uni.getStorageSync('img'))
-				this.imagesList.push(uni.getStorageSync('img'))
-			}
-			
-			if(uni.getStorageSync('address')){
-				let lonLat = uni.getStorageSync('address').location.split(",")
-				this.parame.position_name = uni.getStorageSync('address').name
-				this.parame.longitude = lonLat[0]
-				this.parame.latitude=lonLat[1]
+			}else{
+				if(uni.getStorageSync('img')){
+					this.imageList.push(this.apis+uni.getStorageSync('img'))
+					this.imagesList.push(uni.getStorageSync('img'))
+				}
 				
-			}
-			
-			if(uni.getStorageSync("tag")){
-				this.tags=uni.getStorageSync("tag")
-				let arr = []
-				arr.push(this.tags)
-				this.parame.tag=JSON.stringify(arr)
-			}
-			
-			if(uni.getStorageSync("tags")){
-				this.tips=uni.getStorageSync("tags")
+				if(uni.getStorageSync('address')){
+					let lonLat = uni.getStorageSync('address').location.split(",")
+					this.parame.position_name = uni.getStorageSync('address').name
+					this.parame.longitude = lonLat[0]
+					this.parame.latitude=lonLat[1]
+					
+				}
 				
+				if(uni.getStorageSync("tags")){//不是第一次标签
+					this.tips=uni.getStorageSync("tags")
+					
+				}
 			}
+			
+			
 			
 			this.height=this.$store.state.system.screenHeight
 		},
-		onShow() {
-			
-			
-			
-		},
+		
 		methods:{
 			/**
 			 * @param {Object} 大事记详情编辑回显 type为echo调用
@@ -255,11 +237,19 @@
 					this.parame.file = JSON.stringify(imgs)
 				}
 				
-				let arr=[]
+				let arrs=[]
+				let tag=this.$store.state.tag
+				let arr = []
+				if(tag){
+					arr.push(tag)
+					this.parame.tag=JSON.stringify(arr)
+				}
+				
 				if(uni.getStorageSync("tag")&&this.tips){
-					arr.push(uni.getStorageSync("tag"))
+					arrs.push(tag)
 					this.parame.tag = JSON.stringify(this.tips.concat(arr))
 				}
+				console.log(uni.getStorageSync("tags"))
 				if(this.type=="echo"){//修改大事记
 					url="/app_baby/updateMemorabilia"
 					objs.baby_id = this.parame.baby_id
@@ -276,22 +266,22 @@
 					objs=this.parame
 				}
 				if(this.parame.file&&this.parame.baby_id&&this.parame.tag.length>0&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
-					this.http(url,objs).then(res=>{
-						if(res.code==1){
-							uni.redirectTo({
-								url:"/pages/index/baby_detail"
-							})
-							uni.removeStorageSync("address")
-							uni.removeStorageSync("tags")
-							uni.removeStorageSync("tag")
-						}else{
-							uni.showToast({
-								title:res.msg,
-								icon:"none"
-							})
-						}
+					// this.http(url,objs).then(res=>{
+					// 	if(res.code==1){
+					// 		uni.redirectTo({
+					// 			url:"/pages/index/baby_detail"
+					// 		})
+					// 		uni.removeStorageSync("address")
+					// 		uni.removeStorageSync("tags")
+					// 		uni.removeStorageSync("tag")
+					// 	}else{
+					// 		uni.showToast({
+					// 			title:res.msg,
+					// 			icon:"none"
+					// 		})
+					// 	}
 						
-					})
+					// })
 				}else{
 					uni.showToast({
 						title:"请填写完整信息",
@@ -315,11 +305,12 @@
 						success:res=>{
 							
 							if (res.confirm) {
-								uni.redirectTo({
+								uni.reLaunch({
 									url:"/pages/index/baby_detail"
 								})
 								uni.removeStorageSync("tags")
 								uni.removeStorageSync("tag")
+								uni.removeStorageSync("address")
 							} else if (res.cancel) {
 								console.log('用户点击取消');
 							}
@@ -464,8 +455,17 @@
 			 * @param {Object} 移除标签(第一次)
 			 */
 			remove(){
-				this.tags=null
-				uni.removeStorageSync("tag")
+				let tag = uni.getStorageSync("tag")
+				if(tag){
+					uni.removeStorageSync("tag")
+					this.tags=null
+					this.$store.commit("firstAdd",this.tags)
+					// let obj = tag.splice(tag.findIndex(e => e.tag === data.tag), 1)
+					// console.log(obj)
+				}
+				
+				//this.tags=null
+				
 			},
 			
 			/*
