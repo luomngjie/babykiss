@@ -3,6 +3,7 @@
 		<custom :back="false" rightText="保存" leftText="取消" @click-right="save" @click-left="cancal"></custom>
 		
 		<view class="contenttext">
+			
 			<textarea class="p-20" placeholder="请输入备注信息"  @blur = "descInput" v-model="parame.describe" placeholder-style="font-size:26upx; "/>
 			<view class="imagelist">
 				<view class="uni-upload-img uni-flex uni-row" >
@@ -13,7 +14,7 @@
 					<view class="upload" @tap="addPic">
 						<image src="../../../../static/img/up.png" class="image"></image>
 					</view>
-				</view>
+				</view> 
 				
 			</view>
 			
@@ -31,8 +32,9 @@
 				</view>
 				
 				
-				<view class="list" v-for="(item,index) in tips" :key="index"  v-if="tips.length>0" v-model="tips">
+				<view class="list" v-for="(item,index) in this.$store.state.addbaby" :key="index"  v-if="tips.length>0" v-model="tips">
 					<text @click="tipsClick(item,index)">{{item.tag}}</text>
+					
 					<image src="../../../../static/img/cheng.png" class="img" @click="removes(item)"></image>
 				</view>
 				<view class="list"  v-else>
@@ -87,7 +89,7 @@
 			return {
 				parame:{//大事记上传参数
 					date: currentDate,
-					describe:'',
+					describe:''||uni.getStorageSync("addinfo").describe,
 					position_name:'重庆',
 					longitude:"106.55",
 					latitude:"29.57",
@@ -115,7 +117,7 @@
 				type:'',//是否是回显的大事记详情
 				memorabilia_id:"",//大事记主键id
 				tag_id:"",//标签id回显用
-				tips:[],
+				tips:this.$store.state.addbaby?this.$store.state.addbaby:[],
 				tags:null//第一次标签
 			};
 		},
@@ -124,6 +126,11 @@
 			return true
 		},
 		onLoad(opt) {
+			if(uni.getStorageSync("addinfo")){
+				let desc = uni.getStorageSync("addinfo").describe
+				this.parame.describe = desc
+			}
+			
 			if(opt.type=="echo"){
 				this.type = opt.type
 				this.memorabilia_id = opt.memorabilia_id
@@ -143,7 +150,7 @@
 				}
 				
 				if(uni.getStorageSync("tags")){//不是第一次标签
-					this.tips=uni.getStorageSync("tags")
+					this.tips=this.$store.state.addbaby
 					
 				}
 			}
@@ -245,11 +252,15 @@
 					this.parame.tag=JSON.stringify(arr)
 				}
 				
-				if(uni.getStorageSync("tag")&&this.tips){
-					arrs.push(tag)
-					this.parame.tag = JSON.stringify(this.tips.concat(arr))
+				
+				if(!uni.getStorageSync("tag")&&!uni.getStorageSync("tags")){
+					this.parame.tag=[]
+				}else{
+					if(this.tips){
+						arrs.push(tag)
+						this.parame.tag = JSON.stringify(this.tips.concat(arr))
+					}
 				}
-				console.log(uni.getStorageSync("tags"))
 				if(this.type=="echo"){//修改大事记
 					url="/app_baby/updateMemorabilia"
 					objs.baby_id = this.parame.baby_id
@@ -266,22 +277,23 @@
 					objs=this.parame
 				}
 				if(this.parame.file&&this.parame.baby_id&&this.parame.tag.length>0&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
-					// this.http(url,objs).then(res=>{
-					// 	if(res.code==1){
-					// 		uni.redirectTo({
-					// 			url:"/pages/index/baby_detail"
-					// 		})
-					// 		uni.removeStorageSync("address")
-					// 		uni.removeStorageSync("tags")
-					// 		uni.removeStorageSync("tag")
-					// 	}else{
-					// 		uni.showToast({
-					// 			title:res.msg,
-					// 			icon:"none"
-					// 		})
-					// 	}
+					this.http(url,objs).then(res=>{
+						if(res.code==1){
+							uni.redirectTo({
+								url:"/pages/index/baby_detail"
+							})
+							uni.removeStorageSync("address")
+							uni.removeStorageSync("tags")
+							uni.removeStorageSync("tag")
+							uni.removeStorageSync("addinfo")
+						}else{
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
+							})
+						}
 						
-					// })
+					})
 				}else{
 					uni.showToast({
 						title:"请填写完整信息",
@@ -323,8 +335,16 @@
 			 * 文本框信息
 			 */
 			descInput(e){
+				
 				let value = e.detail.value
-				this.parame.describe=value
+				let obj={
+					describe:value,
+					file:this.parame.file
+				}
+				this.$store.commit("addinfo",obj)
+				let desc = uni.getStorageSync("addinfo").describe
+				this.parame.describe = desc
+				
 				
 			},
 			
@@ -332,6 +352,7 @@
 			 * @param {Object} imgAll添加图片
 			 */
 			addPic(imgAll){
+				
 				this.imgAllUrl = [];
 				this.imagesAll=[];
 				let url = "https://api.diewo.cn/index.php";
@@ -357,9 +378,14 @@
 								const back = JSON.parse(data.data);
 								var imgUrl = back.data.str_url;
 								that.imagesList = that.imagesList.concat(imgUrl);
+								
+								
+								
 								//将图片路径赋值给imgAllUrl
 								that.imgAllUrl.push(imgUrl)
 								that.imagesAll.push(imgUrl)
+								
+								
 								
 							}
 						})
@@ -447,6 +473,7 @@
 						uni.removeStorageSync("tags")
 					}
 				}
+				
 				
 				
 			},

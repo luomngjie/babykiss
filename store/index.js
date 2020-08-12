@@ -7,9 +7,9 @@ const store = new Vuex.Store({
 	state: {
 		number:1,
 		system:{},
-		addbaby:[],
+		addinfo:uni.getStorageSync("addinfo"),//新增大事记缓存备注信息和图片
+		addbaby:[],//自定义标签
 		tag:null,//第一次标签
-		tags:null,//自定义标签
 		babyInformat:{}//修改宝宝信息
 	},
 	getters: {
@@ -29,22 +29,25 @@ const store = new Vuex.Store({
 			}else{
 				state.addbaby.push(data)
 				uni.setStorageSync("tags",state.addbaby)
-				state.tags = uni.getStorageSync("tags")
+				state.addbaby = uni.getStorageSync("tags")
+				
 			}
 		},
 		firstAdd(state,data){//添加第一次标签
 			uni.setStorageSync("tag",data)
-		
 			state.tag = uni.getStorageSync("tag")
 		},
 		removeBaby(state,data){//移除标签
-			state.addbaby.splice(state.addbaby.findIndex(e => e.tag === data.tag), 1)
-			uni.setStorageSync("tags",state.addbaby)
+			uni.setStorageSync("tags",data)
+			state.addbaby = data
 			
 		},
 		babyItem(state,data){
 			state.babyInformat=data
 			uni.setStorageSync("babyItem",state.babyInformat)
+		},
+		addinfo(state,data){
+			uni.setStorageSync("addinfo",data)
 		}
 	}
 })

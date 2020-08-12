@@ -14,9 +14,9 @@
 		</custom>
 		
 		<view class="background"  style="z-index: 0;" >
-			<image class="background" :src="babySess.cover!=''?apis+'/'+babySess.cover:backgroundImg" @click="setCover"></image>
+			<image class="background" v-model='babySess.cover' :src="babySess.cover!=''?apis+'/'+babySess.cover:backgroundImg" @click="setCover"></image>
 			<view class="logo" style="z-index: 1000;" @click="imgpopup">
-				<image :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;"></image>
+				<image v-model='babySess.head_portrait' :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;"></image>
 				<view class="right">
 					<view class="name">第{{days.day}}天</view>
 					
@@ -449,19 +449,25 @@
 								let objs = JSON.parse(uploadFileRes.data);
 								if(objs.code==1){
 									let obj = {};
+									let item = uni.getStorageSync("babyItem")
 									if(self.tips=="设置封面"){
 										obj={
 											baby_id:uni.getStorageSync("babyItem").id,
 											cover:objs.data.str_url
 										}
+										item.cover=objs.data.str_url
 										self.babySess.cover = objs.data.str_url
+										self.$store.commit("babyItem",item)
 										
 									}else{
 										obj={
 											baby_id:uni.getStorageSync("babyItem").id,
 											head_portrait:objs.data.str_url
 										}
+										item.head_portrait=objs.data.str_url
 										self.babySess.head_portrait = objs.data.str_url
+										self.$store.commit("babyItem",item)
+										//self.babySess.head_portrait = objs.data.str_url
 									}
 									
 									self.http("/app_baby/updateBaby",obj).then(res=>{

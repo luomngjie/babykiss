@@ -22,13 +22,13 @@
 			</custom>
 			
 			<scroll-view  :style="{'height':height-90+'px'}"  @scrolltolower="onReachScollBottom" 
-			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
+			 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true" bindscrolltoupper="refresh">
 			
 			<view class="background"  >
-				<image :src="babySess.cover?apis+'/'+babySess.cover:backgroundImg" class="background" @click="clickCover"></image>
+				<image v-model='babySess.cover' :src="babySess.cover?apis+'/'+babySess.cover:backgroundImg" class="background" @click="clickCover"></image>
 				<!-- 宝宝头像 -->
 				<view class="logo">
-					<image :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;" @click="imgpopup"></image>
+					<image v-model='babySess.head_portrait' :src="babySess.head_portrait?apis+'/'+babySess.head_portrait:system" class="img"  style="border-radius: 50%;" @click="imgpopup"></image>
 					<view class="right" @tap.click="clickLogo">
 						<view class="name">{{param.name}}</view>
 						<view class="name">刚出生<image src="../../static/img/ready.png" class="ready"></image></view>
@@ -245,25 +245,28 @@
 				        		let obj = JSON.parse(uploadFileRes.data);
 				        		if(obj.code==1){
 									let objs={}
+									let item = uni.getStorageSync("babyItem")
+									
 									if(type=='logo'){
 										 objs={
-											baby_id:uni.getStorageSync("babyItem").id,
+											baby_id:item.id,
 											head_portrait:obj.data.str_url
 										}
-									}else{
+										item.head_portrait=obj.data.str_url
+										self.babySess.head_portrait = obj.data.str_url
+										self.$store.commit("babyItem",item)
+									}else if(type=='cover'){
 										 objs={
-											 baby_id:uni.getStorageSync("babyItem").id,
+											 baby_id:item.id,
 											cover:obj.data.str_url
 										}
+										item.cover=obj.data.str_url
+										self.babySess.cover = obj.data.str_url
+										self.$store.commit("babyItem",item)
 									}
-									
-									//self.babyImg.logo = self.apis+
 									self.http("/app_baby/updateBaby",objs).then(res=>{
+										
 										if(res.code==1){
-											uni.navigateTo({
-												url:"/pages/index/baby_detail"
-											})
-											
 										}else{
 											uni.showToast({
 												title:res.msg,

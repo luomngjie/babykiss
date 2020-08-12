@@ -78,7 +78,7 @@
 						title:"请选择标签",
 						icon:"none"
 					})
-					return
+					return 
 				}
 				uni.navigateTo({
 					url:this.type?"/pages/index/memorabilia/next/next?type="+this.type+"&memorabilia_id="+this.memorabilia_id:"/pages/index/memorabilia/next/next",

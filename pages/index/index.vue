@@ -1,14 +1,20 @@
 <template>
-	<view class="content" :style="{'height':height-30+'px','background':isShowBaby=='addbaby'?'':'#fff'}">
+	<view class="content" :style="{'height':height-50+'px','background':isShowBaby=='addbaby'?'':'#fff'}">
 		<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false" :statusBarBackground="'#fff'" :bg="'#fff'"></custom>
-		<scroll-view  :style="{'height':height-150+'px'}"  @scrolltolower="onReachScollBottom"
-		 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true">
+		<scroll-view  :style="{'height':height+'px'}"  @scrolltolower="onReachScollBottom"
+		 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true"
+			refresher-enabled="true" :refresher-triggered="triggered"
+			 :refresher-threshold="50" refresher-background="lightgreen" @refresherpulling="onPulling"
+			 @refresherrefresh="onRefresh" @refresherrestore="onRestore" @refresherabort="onAbort"
+			 :refresher-background="'#eee'">
 			<view class="item" v-for="(item,index) in babyList" :key="index" @click="detail(item)" >
 				<view class="item-left">
-					<image src="../../static/img/babysel.png" class="img"></image>
+					<image :src="item.head_portrait?apis+item.head_portrait:customLogo" class="img" v-if="item.type==2"></image>
+					<image :src="item.head_portrait?apis+item.head_portrait:customLogoTai" class="img" v-if="item.type==1"></image>
 					<view class="con">
 						<view class="top">{{item.name}}</view>
-						<view class="tips">第{{item.day||0}}天，共{{item.baby_log_count}}条记录</view>
+						<view class="tips" v-if="item.type==2">第{{item.day||0}}天，共{{item.baby_log_count}}条记录</view>
+						<view class="tips" v-if="item.type==1">孕{{item.week||0}}周，共{{item.baby_log_count}}条记录</view>
 					</view>
 				</view>
 				<image src="../../static/img/jiantou.png" class="item-right"></image>
@@ -37,8 +43,14 @@
 			loading,
 			ysteps
 		},
+		onShow() {
+		   
+		},
 		data() {
 			return {
+			    triggered: false,//下拉刷新
+				customLogo:require("../../static/img/babysel.png"),
+				customLogoTai:require("../../static/img/taixin.png"),
 				backgroundImg:require('../../static/img/banner.jpg'),
 				animationData:{},
 				bottom:[
@@ -62,60 +74,7 @@
 				type:"index",//用于时间线类型区别。区分首页时间线样式和宝宝大事记样式
 				isShows:false,//是否显示遮罩层
 				color:[525,255,30],
-				talk: [
-					{
-						"id": 1,
-						"MMDD": "1月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "李四",
-									"hms": "第一次学游泳",
-									"talk": "好嗨哟",
-									"image":'../../static/img/banner.jpg'
-								}
-							}
-						]
-						
-					},
-					{
-						"id": 2,
-						"MMDD": "10月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "李阿达",
-									"HMS": "05:20:18",
-									"talk": "测试数据测试数据测试数据测试数据测试数据测试数据",
-								}
-							}
-						]
-						
-					},
-					{
-						"id": 3,
-						"MMDD": "5月21",
-						"data":[
-							{
-								"user": {
-									"u_name": "165.0.cm",
-									"hms": "56.0kg",
-									"talk": "15.0cm",
-								}
-							},
-							{
-								"user": {
-									"u_name": "165.0.cm",
-									"hms": "156.0kg",
-									"talk": "15.0cm",
-								}
-							}
-							
-						]
-						
-					}
-					
-				],
+				talk: [],
 				nav:[
 					
 					{
@@ -148,6 +107,7 @@
 					week:""
 				},//年月日
 				babyList:[],//宝宝数组
+				apis:"https://api.diewo.cn/",//图片
 				page:{
 					page:1,//当前页数
 					num:10,//当前条数
@@ -171,6 +131,27 @@
 			
 		},
 		methods: {
+			/**
+			 * @param {Object} 自定义下拉刷新部分
+			 */
+			onPulling(e) {//自定义下拉刷新控件被下拉
+				console.log("onpulling", e);
+			},
+			onRefresh() {//自定义下拉刷新被触发
+				if (this._freshing) return;
+				this._freshing = true;
+				setTimeout(() => {
+					this.triggered = false;
+					this._freshing = false;
+				}, 3000)
+			},
+			onRestore() {//自定义下拉刷新被复位
+				this.triggered = 'restore'; // 需要重置
+				console.log("onRestore");
+			},
+			onAbort() {//自定义下拉刷新被中止
+				console.log("onAbort");
+			},
 			/**
 			 * 获取当前日期
 			 */
@@ -396,10 +377,12 @@
 		},
 		onLoad(opt) {
 			this.height=this.$store.state.system.screenHeight
-			
 			this.isShowBaby=opt.type||''
 			this.babyLists()
-			
+			this._freshing = false;
+			setTimeout(() => {
+				this.triggered = true;
+			}, 1000)
 				
 		},
 		
@@ -580,7 +563,7 @@
 			.item-left{
 				width:500upx;
 				.img{
-					width:80upx;height: 80upx;
+					width:80upx;height: 80upx;border-radius: 50%;
 				}
 				display: flex;
 				align-items: center;
@@ -616,6 +599,7 @@
 				.img{
 					margin:0 20upx;
 					width:60upx;height:60upx;
+					
 				}
 				.right{
 					color:#fff;
