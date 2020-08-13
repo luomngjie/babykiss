@@ -99,6 +99,9 @@
 				<uni-icons  type="arrowright" size="40upx" />
 			</view>
 		</view>
+		
+		
+		<tabBar :pagePath="'/pages/main/main'"></tabBar>
 	</view>
 </template>
 
@@ -121,7 +124,7 @@
 </script>
 
 
-<style scoped>
+<style scoped >
 	.icon{
 		    color: rgb(51, 51, 51);
 		    position: absolute;
@@ -148,7 +151,7 @@
 		}
 	.add{
 		    color: #5a5858;
-		font-family: cursive;
+		/* font-family: cursive; */
 	}
 	.header2{
 		background-color: #FFFFFF;

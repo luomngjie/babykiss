@@ -328,6 +328,7 @@
 				}
 				.number{
 					flex: 1;margin-left:20upx;
+					color:#aaa;
 				}
 				.clear{
 					width:30upx;height:30upx;

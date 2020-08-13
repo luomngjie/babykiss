@@ -1,7 +1,7 @@
 <template>
-	<view class="content" :style="{'height':height-50+'px','background':isShowBaby=='addbaby'?'':'#fff'}">
+	<view class="content" :style="{'background':isShowBaby=='addbaby'?'':'#fff'}">
 		<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false" :statusBarBackground="'#fff'" :bg="'#fff'"></custom>
-		<scroll-view  :style="{'height':height+'px'}"  @scrolltolower="onReachScollBottom"
+		<scroll-view  :style="{'height':height-130+'px'}"  @scrolltolower="onReachScollBottom"
 		 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true"
 			refresher-enabled="true" :refresher-triggered="triggered"
 			 :refresher-threshold="50" refresher-background="lightgreen" @refresherpulling="onPulling"
@@ -32,6 +32,8 @@
 		
 		<uni-load-more :status="status"></uni-load-more>
 		<loading v-model="show"></loading>
+		
+		<tabBar :pagePath="'/pages/index/index'"></tabBar>
 	</view>
 </template>
 
@@ -44,7 +46,7 @@
 			ysteps
 		},
 		onShow() {
-		   
+		   //uni.removeStorageSync("userInfo")
 		},
 		data() {
 			return {
@@ -115,7 +117,8 @@
 				},
 				show:true,//全局等待动画
 				status: 'more',
-				flage:true
+				flage:true,
+				pull:""
 				
 				
 			}
@@ -123,10 +126,8 @@
 
 		onReachBottom() {
 			if(this.isShowBaby!="addbaby"){
-				if(this.status == 'noMore'){
-					return
-				}
-				this.babyLists()
+				if(this.flage) this.babyLists()
+				
 			}
 			
 		},
@@ -143,15 +144,15 @@
 				setTimeout(() => {
 					this.triggered = false;
 					this._freshing = false;
-				}, 3000)
-				// this.page.page=1
-				// this.babyLists()
+					
+					this.pull="pull"
+					this.babyLists()
+				}, 1000)
 				
 			},
 			onRestore() {//自定义下拉刷新被复位
 				this.triggered = 'restore'; // 需要重置
-				// this.page.page=1
-				// this.babyLists()
+				
 			},
 			onAbort() {//自定义下拉刷新被中止
 				
@@ -287,14 +288,6 @@
 				
 			},
 			
-			/**
-			 * 下拉刷新
-			 */
-			refresh(){
-				if(this.isShowBaby!="addbaby"){
-					if(this.flage) this.babyLists()
-				}
-			},
 			
 			/**
 			 * @param {Object} opt右侧相机点击事件
@@ -357,18 +350,39 @@
 					if(res.code==1){
 						
 						this.show = false
-						this.page.page++
+						
 						this.status="more"
-						
+						this.page.last_page = res.data.last_page
 						this.page.total = res.data.total
-						this.babyList=this.babyList.concat(res.data.data)
-						
-						if(this.babyList.length==res.data.total){
-							this.status = 'noMore'
-							this.flage = false
+						// this.babyList=this.babyList.concat(res.data.data)
+						// if(this.babyList.length==res.data.total){
+							
+						// 	this.status = 'noMore'
+						// 	this.flage = false
+						// 	this.page.page=1
+						// }else{
+						// 	this.flage = true
+						// }
+						if(this.page.last_page==this.page.page){
+							this.page.page=1
 						}else{
-							this.flage = true
+							this.page.page++
 						}
+						if(this.pull=="pull"){
+							this.babyList=res.data.data
+							
+						}else{
+							this.babyList=this.babyList.concat(res.data.data)
+							if(this.babyList.length==res.data.total){
+								
+								this.status = 'noMore'
+								this.flage = false
+								this.page.page=1
+							}else{
+								this.flage = true
+							}
+						}
+						
 					}else{
 						uni.showToast({
 							title:res.msg,
@@ -396,16 +410,6 @@
 		},
 		
 		
-		/**
-		 * 下拉刷新
-		 */
-		onPullDownRefresh(){
-			// this.refresh()
-			// setTimeout(()=>{
-			// 	 uni.stopPullDownRefresh();
-				 
-			// },2000)
-		},
 		
 		/**
 		 * 监听页面滚动距离

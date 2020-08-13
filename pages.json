@@ -130,39 +130,12 @@
         }
     ],
 	
-	"tabBar": {
-		"color":"#808080", 
-		"selectedColor":"#FF0000" ,
-		"backgroundColor": "#ffffff",
-		"list": [{
-			"pagePath":"pages/index/index",
-			"text": "亲宝宝",
-			"iconPath": "static/img/baby.png",
-			"selectedIconPath": "static/img/babysel.png"
-		}, {
-			"pagePath":"pages/parenting/parenting",
-			"text": "孕育",
-			"iconPath": "static/img/yuer.png",
-			"selectedIconPath": "static/img/yuer1.png"
-		}, {
-			"pagePath":"pages/news/news",
-			"text": "消息",
-			"iconPath": "static/img/new.png",
-			"selectedIconPath": "static/img/new1.png"
-		}, {
-			"pagePath": "pages/main/main",
-			"text": "我的",
-			"iconPath": "static/img/main.png",
-			"selectedIconPath": "static/img/main1.png"
-		}]
-	},
-	
-	
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarBackgroundColor": "#FFFFFF",
 		"backgroundColor": "#FFFFFF",
 		"pageOrientation": "portrait"
+	
 	},
 	
 	"condition" : { //模式配置，仅开发期间生效

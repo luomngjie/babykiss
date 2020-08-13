@@ -175,6 +175,7 @@
 							this.parame.describe = item.describe
 							if(item.file.length!=0){
 								this.imageList = item.file
+								this.imagesList = item.file
 								let obj = {},imgs=[]
 								item.file.forEach(item=>{
 									obj.file=item
@@ -192,8 +193,10 @@
 								let app = item.baby_tag_one.filter(item=>item.is_one==1)
 								let apps = item.baby_tag_one.filter(item=>item.is_one==0)
 								this.parame.tag = apps
+								
 								this.tips = apps
 								this.tags = app[0]
+								this.$store.commit("firstAdd",this.tags)
 							}
 							
 							
@@ -232,15 +235,19 @@
 				
 				this.tips = uni.getStorageSync("tags")
 				
-				let imgs=[],obj={}
+				let imgs=[]
 				this.parame.baby_id = uni.getStorageSync("babyItem").id
 				
 				if(this.imagesList.length>0){
 					this.imagesList.forEach(item=>{
+						let obj={}
 						obj.file=item
+						imgs.push(obj)
 						
 					})
-					imgs.push(obj)
+					
+					
+					
 					this.parame.file = JSON.stringify(imgs)
 				}
 				
@@ -276,7 +283,7 @@
 					url="/app_baby/addMemorabilia"
 					objs=this.parame
 				}
-				if(this.parame.file&&this.parame.baby_id&&this.parame.tag.length>0&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
+				if(this.parame.baby_id&&this.parame.tag.length>0&&this.parame.describe&&this.parame.longitude&&this.parame.date&&this.parame.position_name){
 					this.http(url,objs).then(res=>{
 						if(res.code==1){
 							uni.redirectTo({
@@ -286,6 +293,7 @@
 							uni.removeStorageSync("tags")
 							uni.removeStorageSync("tag")
 							uni.removeStorageSync("addinfo")
+							uni.removeStorageSync("img")
 						}else{
 							uni.showToast({
 								title:res.msg,

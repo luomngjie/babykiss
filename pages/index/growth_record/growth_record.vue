@@ -18,7 +18,7 @@
 					</block>
 					</view>
 				</scroll-view>
-				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-110+'px'}" v-if="currentTab==0">
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange"  v-if="currentTab==0">
 					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
 							<scroll-view class="swiper-one-list" scroll-y="true" :style="{'height':height-105+'px'}" @scrolltolower="onReachScollBottom">
@@ -47,7 +47,7 @@
 					</block>
 				</swiper>
 				
-				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==1">
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange"  v-if="currentTab==1">
 					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
 							<view>{{item.name}}</view>
@@ -55,7 +55,7 @@
 					</block>
 				</swiper>
 				
-				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==2">
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange"  v-if="currentTab==2">
 					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
 							<view>{{item.name}}</view>
@@ -63,7 +63,7 @@
 					</block>
 				</swiper>
 				
-				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange" :style="{'height':height-80+'px'}" v-if="currentTab==3">
+				<swiper :current="currentTab" class="swiper-box-list" duration="300" @change="swiperChange"  v-if="currentTab==3">
 					<block v-show="currentTab==index" v-for="(item,index) in menuTabs">
 						<swiper-item :style="{'marginTop':currentTab==0?'20'+'upx':''}">
 							<view>{{item.name}}</view>

@@ -82,7 +82,7 @@
 		   /**
 			* 验证码输入完成自动触发
 			*/
-		   finish(e){
+		   finish(e){ 
 			   if(this.pwd=="pwd"){
 				   this.http("/sms/check",{mobile:this.phone,captcha:e}).then(res=>{
 					   if(res.code==1){
@@ -93,7 +93,7 @@
 								icon:"none"
 							})
 							setTimeout(()=>{
-								uni.reLaunch({
+								uni.redirectTo({
 									url:"/pages/index/index"
 								})
 							},1200)
@@ -115,7 +115,7 @@
 								icon:"none",
 								success:res=>{
 									setTimeout(()=>{
-										 uni.switchTab({url:"/pages/index/index"})
+										 uni.redirectTo({url:"/pages/index/index"})
 									},1200)
 								}
 							 })

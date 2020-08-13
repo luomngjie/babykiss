@@ -101,6 +101,7 @@
 		
 		<uni-load-more :status="status"></uni-load-more>
 		<loading v-model="show"></loading> -->
+		<tabBar :pagePath="'/pages/index/index'"></tabBar>
 	</view>
 </template>
 

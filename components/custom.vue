@@ -35,7 +35,7 @@
 
 					<block >
 						<slot name="centerAfter" v-if="centerSlidiSwitch && slotSlidiSwitch == 1" />
-						<slot v-else name="ceb"/>
+						<slot v-else name="center"/>
 
 					</block>
 				</view>

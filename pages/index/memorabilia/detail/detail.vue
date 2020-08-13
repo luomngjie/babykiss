@@ -18,7 +18,10 @@
 					<view class="dayNumber">第{{item.day}}天</view>
 				</view>
 				
-				<image :src="item.file[0]?item.file[0]:backgroundImg" class="menu-image" ></image>
+				<view class="imgsRow">
+					<image :src="items" :class="item.file.length>1?'nums-Images':'menu-image'" v-for="(items,index) in item.file" v-if="item.file.length>0"></image>
+				</view>
+				<!-- <image :src="item.file[0]?item.file[0]:backgroundImg" class="menu-image" ></image> -->
 				
 				<view class="date">
 					<view class="dayNumber" v-if="item.describe">{{item.describe}}</view>
@@ -358,9 +361,22 @@
 			padding-bottom: 20upx;
 			flex-direction: column;
 			margin-bottom: 33upx;
-			.menu-image{
-				width:100%;
-				height:305upx;
+			
+			.imgsRow{
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				justify-content: flex-start;
+				.menu-image{
+					width:100%;
+					height:305upx;
+					
+				}
+				.nums-Images{
+					width:345upx;
+					height:100px;
+					margin:10upx;
+				}
 			}
 			.date{
 				display: flex;
