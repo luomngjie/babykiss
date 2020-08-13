@@ -27,6 +27,9 @@ Vue.component('uniIcons',uniIcons)
 import uniLoadMore from './components/uni-load-more/uni-load-more.vue'
 Vue.component('uniLoadMore',uniLoadMore)
 
+// import tabBar from "@/components/footer.vue"
+// Vue.component('tabBar',tabBar)
+
 App.mpType = 'app'
 
 const app = new Vue({

@@ -1,5 +1,5 @@
 <template>
-	<view class="content" :style="{'height':height-50+'px','background':isShowBaby=='addbaby'?'':'#fff'}">
+	<view class="content" :style="{'height':height+'px','background':isShowBaby=='addbaby'?'':'#fff'}">
 		<custom title="宝宝" rightIcon="jia" @click-right="operation" :back="false" :statusBarBackground="'#fff'" :bg="'#fff'"></custom>
 		<scroll-view  :style="{'height':height+'px'}"  @scrolltolower="onReachScollBottom"
 		 @scroll="scroll" scroll-y="true" class="scroller" scroll-with-animation="true"
@@ -32,6 +32,9 @@
 		
 		<uni-load-more :status="status"></uni-load-more>
 		<loading v-model="show"></loading>
+		
+		<!-- <view class="uni-p-b-98"></view>
+		<tabBar></tabBar> -->
 	</view>
 </template>
 
@@ -110,24 +113,25 @@
 				apis:"https://api.diewo.cn/",//图片
 				page:{
 					page:1,//当前页数
-					num:10,//当前条数
+					num:2,//当前条数
 					total:''//数据总数
 				},
 				show:true,//全局等待动画
 				status: 'more',
-				flage:true
+				flage:true,
+				pull:""
 				
 				
 			}
 		},
 
 		onReachBottom() {
-			if(this.isShowBaby!="addbaby"){
-				if(this.status == 'noMore'){
-					return
-				}
-				this.babyLists()
-			}
+			// if(this.isShowBaby!="addbaby"){
+			// 	if(this.status == 'noMore'){
+			// 		return
+			// 	}
+			// 	this.babyLists()
+			// }
 			
 		},
 		methods: {
@@ -135,7 +139,7 @@
 			 * @param {Object} 自定义下拉刷新部分
 			 */
 			onPulling(e) {//自定义下拉刷新控件被下拉
-				console.log("onpulling", e);
+				
 			},
 			onRefresh() {//自定义下拉刷新被触发
 				if (this._freshing) return;
@@ -143,14 +147,19 @@
 				setTimeout(() => {
 					this.triggered = false;
 					this._freshing = false;
-				}, 3000)
+					
+					
+				}, 1000)
 			},
 			onRestore() {//自定义下拉刷新被复位
 				this.triggered = 'restore'; // 需要重置
-				console.log("onRestore");
+				this.page.page++
+				this.pull="pull"
+				//if(this.flage) this.babyLists()
+				
 			},
 			onAbort() {//自定义下拉刷新被中止
-				console.log("onAbort");
+				
 			},
 			/**
 			 * 获取当前日期
@@ -283,14 +292,6 @@
 				
 			},
 			
-			/**
-			 * 下拉刷新
-			 */
-			refresh(){
-				if(this.isShowBaby!="addbaby"){
-					if(this.flage) this.babyLists()
-				}
-			},
 			
 			/**
 			 * @param {Object} opt右侧相机点击事件
@@ -358,13 +359,32 @@
 						
 						this.page.total = res.data.total
 						this.babyList=this.babyList.concat(res.data.data)
-						
 						if(this.babyList.length==res.data.total){
+							
 							this.status = 'noMore'
 							this.flage = false
+							this.page.page=1
 						}else{
 							this.flage = true
 						}
+						// if(this.pull){
+						// 	this.babyList=res.data.data
+						// 	if(res.data.data.length==0){
+						// 		this.page.page=1
+						// 		this.flage = false
+						// 	}
+						// }else{
+						// 	this.babyList=this.babyList.concat(res.data.data)
+						// 	if(this.babyList.length==res.data.total){
+								
+						// 		this.status = 'noMore'
+						// 		this.flage = false
+						// 		this.page.page=1
+						// 	}else{
+						// 		this.flage = true
+						// 	}
+						// }
+						
 					}else{
 						uni.showToast({
 							title:res.msg,

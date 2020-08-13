@@ -163,6 +163,7 @@
 		"navigationBarBackgroundColor": "#FFFFFF",
 		"backgroundColor": "#FFFFFF",
 		"pageOrientation": "portrait"
+	
 	},
 	
 	"condition" : { //模式配置，仅开发期间生效

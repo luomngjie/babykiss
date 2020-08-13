@@ -20,7 +20,11 @@
 								
 							</view> -->
 							<view class="col-img" v-if="item.type==2" >
-								<image :src="item.morph_to_model.file[0]?item.morph_to_model.file[0]:backgroundImg" class="menu-image"></image>
+								<view class="imgsRow">
+									<image :src="items" :class="item.morph_to_model.file.length>1?'nums-Images':'menu-image'" v-for="(items,index) in item.morph_to_model.file" v-if="item.morph_to_model.file.length>0"></image>
+								</view>
+								
+								<!-- <image :src="item.morph_to_model.file[0]?item.morph_to_model.file[0]:backgroundImg" class="menu-image"></image> -->
 								<view class="conten" v-if="item.morph_to_model.describe">{{item.morph_to_model.describe}}</view>
 								<view class="conten first" v-if="item.morph_to_model.tag">{{item.morph_to_model.tag}}</view>
 							</view>
@@ -222,10 +226,23 @@
 					color:#6D7588;border-radius: 20upx;
 					
 				}
-				.menu-image{
-					width:100%;
-					height:305upx;
+				.imgsRow{
+					display: flex;
+					flex-direction: row;
+					flex-wrap: wrap;
+					justify-content: flex-start;
+					.menu-image{
+						width:100%;
+						height:305upx;
+						
+					}
+					.nums-Images{
+						width:280upx;
+						height:100px;
+						margin:10upx;
+					}
 				}
+				
 			}
 			.tabbar{
 				display: flex;
