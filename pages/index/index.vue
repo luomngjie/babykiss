@@ -135,7 +135,7 @@
 			 * @param {Object} 自定义下拉刷新部分
 			 */
 			onPulling(e) {//自定义下拉刷新控件被下拉
-				console.log("onpulling", e);
+				
 			},
 			onRefresh() {//自定义下拉刷新被触发
 				if (this._freshing) return;
@@ -144,13 +144,17 @@
 					this.triggered = false;
 					this._freshing = false;
 				}, 3000)
+				// this.page.page=1
+				// this.babyLists()
+				
 			},
 			onRestore() {//自定义下拉刷新被复位
 				this.triggered = 'restore'; // 需要重置
-				console.log("onRestore");
+				// this.page.page=1
+				// this.babyLists()
 			},
 			onAbort() {//自定义下拉刷新被中止
-				console.log("onAbort");
+				
 			},
 			/**
 			 * 获取当前日期
