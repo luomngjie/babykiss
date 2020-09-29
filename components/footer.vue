@@ -16,12 +16,12 @@
 <template>
     <view class="uni-tabbar">
         <view class="uni-tabbar__item" v-for="(item,index) in tabbar" :key="index" @tap="changeTab(item)">
-            <view class="icon" :class="[item.fontIcon , item.pagePath == pagePath?'uni-active':'']"></view>
+           <!-- <view class="icon" :class="[item.fontIcon , item.pagePath == pagePath?'uni-active':'']"></view> -->
             <!-- 上面使用的是字体图标，解决切换页面的时候图标会闪的效果，毕竟每切换一个页面都会闪一下不太好看，可以切换使用下面的图片方式 -->
-            <view v-if="false" class="uni-tabbar__bd">
+            <view  class="uni-tabbar__bd">
                 <view class="uni-tabbar__icon">
-                    <image v-if="item.pagePath == pagePath" class="uni-w-42 uni-h-42" mode="aspectFit" :src="item.selectedIconPath"></image>
-                    <image v-else class="uni-w-42 uni-h-42" mode="aspectFit" :src="item.iconPath"></image>
+                    <image v-if="item.pagePath == pagePath" class="uni-w-20 uni-h-20" mode="aspectFit" :src="item.selectedIconPath"></image>
+                    <image v-else class="uni-w-20 uni-h-20" mode="aspectFit" :src="item.iconPath"></image>
                 </view>
             </view>
             <view class="uni-tabbar__label" :class="{'active': item.pagePath == pagePath}">
@@ -105,7 +105,7 @@
         width: 100%;
         display: flex;
         justify-content: space-around;
-        height: 98upx;
+        height: 105upx;
         padding: 16upx 0;
         box-sizing: border-box;
         border-top: solid 1upx #ccc;
@@ -118,9 +118,13 @@
             text-align: center;
         }
         .uni-tabbar__icon {
+			margin-bottom: 10upx;
             height: 42upx;
             line-height: 42upx;
             text-align: center;
+			.uni-w-20{
+				width:50upx;height: 50upx;
+			}
         }
         .icon {
             display: inline-block;
@@ -130,7 +134,7 @@
             font-size: 24upx;
             color: #999;
             &.active {
-                color: #1ca6ec;
+                color: #e4393c;
             }
         }
     }
